@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:eth_wallet/login/library.dart' as login;
 
 void main() {
@@ -8,9 +9,17 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
-    themeMode: ThemeMode.system,
-    theme: ThemeData(brightness: Brightness.light, fontFamily: "Oswald"),
-    darkTheme: ThemeData(brightness: Brightness.dark, fontFamily: "Oswald"),
+    theme: ThemeData(
+      //brightness: Brightness.dark,
+      colorScheme: ThemeData().colorScheme.copyWith(primary: Color(0xFF41CD7D), brightness: Brightness.dark)
+    ),
+
+
+    // theme: ThemeData().copyWith(
+    //   brightness: Brightness.dark,
+    //   colorScheme: ThemeData().colorScheme.copyWith(brightness: Brightness.dark,primary: Color(0xFF41CD7D)),
+    //   errorColor: Colors.purple,
+    // ),
     home: MyHomePage(),
     debugShowCheckedModeBanner: false,
   );
