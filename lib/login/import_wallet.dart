@@ -45,7 +45,9 @@ class _ImportWalletState extends State<ImportWallet> {
                     border: InputBorder.none,
                     hintText: 'Input your 12-word phrase here...',
                   ),
-            ),),),
+            ),
+              ),
+            ),
 
       Padding(
         padding: const EdgeInsets.only(top : 40),
@@ -57,7 +59,6 @@ class _ImportWalletState extends State<ImportWallet> {
             onPrimary: Colors.black,
             primary: const Color(0xFF41CD7D),
             onSurface: Colors.grey,
-            // side: BorderSide(color: Colors.black, width: 1),
             elevation: 5,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
           ),

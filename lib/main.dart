@@ -14,12 +14,6 @@ class MyApp extends StatelessWidget {
       colorScheme: ThemeData().colorScheme.copyWith(primary: Color(0xFF41CD7D), brightness: Brightness.dark)
     ),
 
-
-    // theme: ThemeData().copyWith(
-    //   brightness: Brightness.dark,
-    //   colorScheme: ThemeData().colorScheme.copyWith(brightness: Brightness.dark,primary: Color(0xFF41CD7D)),
-    //   errorColor: Colors.purple,
-    // ),
     home: MyHomePage(),
     debugShowCheckedModeBanner: false,
   );

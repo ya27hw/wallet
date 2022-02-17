@@ -1,4 +1,5 @@
 import 'package:eth_wallet/login/import_wallet.dart';
+import 'package:eth_wallet/util/library.dart' as widgets;
 import 'package:flutter/material.dart';
 
 class SplashLogin extends StatefulWidget {
@@ -37,43 +38,13 @@ class _SplashLoginState extends State<SplashLogin> {
             ),
           ),
           Container(
-            padding: EdgeInsets.only(top: height * 0.3),
-            child: ElevatedButton(
-              child: const Text("Import a Wallet" ),
-              style: ElevatedButton.styleFrom(
-                textStyle: const TextStyle(fontSize: 17),
-                padding: EdgeInsets.symmetric(horizontal: width * 0.20, vertical: 15),
-                onPrimary: Colors.black,
-                onSurface: Colors.grey,
-                // side: BorderSide(color: Colors.black, width: 1),
-                elevation: 5,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
-              ),
-              onPressed:() {
-
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ImportWallet()));
-
-              },
-            ),
+              padding: EdgeInsets.only(top: height * 0.3),
+              child: widgets.Helper().Button(width, "Import a Wallet", context, MaterialPageRoute(builder: (context) => const ImportWallet()))
           ),
-          Padding(
+          Container(
             padding: const EdgeInsets.only(top: 30),
-            child: ElevatedButton(
-              child: const Text("Create a Wallet" ),
-              style: ElevatedButton.styleFrom(
-                textStyle: const TextStyle(fontSize: 17),
-                padding: EdgeInsets.symmetric(horizontal: width * 0.20, vertical: 15),
-                onPrimary: Colors.black,
-                onSurface: Colors.grey,
-                // side: BorderSide(color: Colors.black, width: 1),
-                elevation: 5,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
-              ),
-              onPressed:() {
-
-              },
-            ),
-          )
+            child: widgets.Helper().Button(width, "Create a Wallet")
+          ),
 
         ],
       ),

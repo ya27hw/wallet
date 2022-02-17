@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Helper {
 
-  Widget Button(int width, String msg) {
+  Widget Button(double width, String msg, [BuildContext? ctx, Route? route]) {
     return ElevatedButton(
       child: Text(msg),
       style: ElevatedButton.styleFrom(
@@ -16,6 +16,10 @@ class Helper {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
       ),
       onPressed:() {
+
+        if (ctx != null && route != null) {
+          Navigator.push(ctx, route);
+        } 
 
       },
     );
