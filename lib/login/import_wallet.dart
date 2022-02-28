@@ -9,12 +9,29 @@ class ImportWallet extends StatefulWidget {
 }
 
 class _ImportWalletState extends State<ImportWallet> {
-  TextEditingController seedPhraseController = TextEditingController();
+  final TextEditingController _seedPhraseController = TextEditingController();
+  late int _seedLength;
+  late Color _seedWordColor;
+  late bool _continueDisabled;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _seedLength = 0;
+    _continueDisabled = false;
+    _seedWordColor = Colors.red;
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _seedPhraseController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // double width = MediaQuery.of(context).size.width;
-    // double height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -34,10 +51,23 @@ class _ImportWalletState extends State<ImportWallet> {
               child: Container(
                 //padding: EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                    color: Color(0xFF32385F),
+                    color: const Color(0xFF32385F),
                     borderRadius: BorderRadius.circular(17)),
                 child: TextFormField(
-                  controller: seedPhraseController,
+                  onChanged: (String value) {
+                    setState(() {
+                      _seedLength =
+                          _seedPhraseController.text.trim().split(" ").length;
+                      if (_seedLength != 12) {
+                        _seedWordColor = Colors.red;
+                        _continueDisabled = false;
+                      } else {
+                        _seedWordColor = Colors.white;
+                        _continueDisabled = true;
+                      }
+                    });
+                  },
+                  controller: _seedPhraseController,
                   maxLines: 3,
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.all(10),
@@ -48,7 +78,14 @@ class _ImportWalletState extends State<ImportWallet> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 40),
+              padding: const EdgeInsets.only(top: 15),
+              child: Text(
+                "$_seedLength/12",
+                style: TextStyle(color: _seedWordColor),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
               // CONTINUE Button
               child: ElevatedButton(
                 child: const Text("Continue"),
@@ -63,17 +100,12 @@ class _ImportWalletState extends State<ImportWallet> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(17)),
                 ),
-                onPressed: () {
-                  var seedList = seedPhraseController.text.split(" ");
-
-                  if (seedList.length != 12) {
-                    // Show error message
-                    utils.Helper().showADialog(context, "Error",
-                        "Please enter a 12-word seed phrase.");
-                  } else {
-                    // Move onto TODO page
-                  }
-                },
+                onPressed: !_continueDisabled
+                    ? null
+                    : () {
+                        // Move onto TODO page
+                        Navigator.of(context).pop();
+                      },
               ),
             ),
           ],

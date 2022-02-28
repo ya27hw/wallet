@@ -12,7 +12,6 @@ class SplashLogin extends StatefulWidget {
 class _SplashLoginState extends State<SplashLogin> {
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
         body: Container(
       width: double.infinity,
@@ -24,9 +23,7 @@ class _SplashLoginState extends State<SplashLogin> {
             padding: EdgeInsets.only(top: utils.getHeight(context) * 0.17),
             child: const Text(
               "Crypto Wallet",
-              style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
@@ -38,13 +35,12 @@ class _SplashLoginState extends State<SplashLogin> {
           ),
           Container(
               padding: EdgeInsets.only(top: utils.getHeight(context) * 0.3),
-              child: utils.Helper().Button(utils.getWidth(context), "Import a Wallet", context, MaterialPageRoute(builder: (context) => const ImportWallet()))
-          ),
+              child: utils.Helper().Button(utils.getWidth(context),
+                  "Import a Wallet", context, "importWallet")),
           Container(
-            padding: const EdgeInsets.only(top: 30),
-            child: utils.Helper().Button(utils.getWidth(context), "Create a Wallet")
-          ),
-
+              padding: const EdgeInsets.only(top: 30),
+              child: utils.Helper()
+                  .Button(utils.getWidth(context), "Create a Wallet")),
         ],
       ),
     ));

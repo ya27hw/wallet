@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Helper {
-
-  Widget Button(double width, String msg, [BuildContext? ctx, Route? route]) {
+  Widget Button(double width, String msg,
+      [BuildContext? ctx, String? routeName]) {
     return ElevatedButton(
       child: Text(msg),
       style: ElevatedButton.styleFrom(
@@ -15,12 +15,10 @@ class Helper {
         elevation: 5,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
       ),
-      onPressed:() {
-
-        if (ctx != null && route != null) {
-          Navigator.push(ctx, route);
-        } 
-
+      onPressed: () {
+        if (ctx != null && routeName != null) {
+          Navigator.pushNamed(ctx, routeName);
+        }
       },
     );
   }
@@ -30,8 +28,8 @@ class Helper {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Text(title),
-          content:  Text(content),
+          title: Text(title),
+          content: Text(content),
           actions: <Widget>[
             TextButton(
               child: const Text("OK"),
@@ -44,5 +42,4 @@ class Helper {
       },
     );
   }
-
 }
