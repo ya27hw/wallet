@@ -7,3 +7,7 @@ double getWidth(BuildContext context) {
 double getHeight(BuildContext context) {
   return MediaQuery.of(context).size.height;
 }
+
+Color secondaryDarkColor() {
+  return const Color(0xFF32385F);
+}

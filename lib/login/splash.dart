@@ -1,4 +1,3 @@
-import 'package:eth_wallet/login/import_wallet.dart';
 import 'package:eth_wallet/util/library.dart' as utils;
 import 'package:flutter/material.dart';
 
@@ -39,8 +38,12 @@ class _SplashLoginState extends State<SplashLogin> {
                   "Import a Wallet", context, "importWallet")),
           Container(
               padding: const EdgeInsets.only(top: 30),
-              child: utils.Helper()
-                  .Button(utils.getWidth(context), "Create a Wallet")),
+              child: utils.Helper().Button(utils.getWidth(context),
+                  "Create a Wallet", context, "createWallet")),
+          Container(
+              padding: const EdgeInsets.only(top: 30),
+              child: utils.Helper().Button(utils.getWidth(context),
+                  "Portfolio (dev)", context, "portfolio")),
         ],
       ),
     ));

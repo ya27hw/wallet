@@ -116,6 +116,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  line_icons:
+    dependency: "direct main"
+    description:
+      name: line_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   lints:
     dependency: transitive
     description:
@@ -221,6 +228,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
+  rotated_corner_decoration:
+    dependency: "direct main"
+    description:
+      name: rotated_corner_decoration
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
