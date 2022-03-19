@@ -124,15 +124,18 @@ class Helper {
       double balanceFiat, double change) {
     return Container(
       foregroundDecoration: const RotatedCornerDecoration(
-        color: Colors.greenAccent,
-        geometry: BadgeGeometry(width: 45, height: 45, cornerRadius: 10, alignment: BadgeAlignment.bottomRight),
+        color: Colors.redAccent,
+        geometry: BadgeGeometry(
+            width: 45,
+            height: 45,
+            cornerRadius: 10,
+            alignment: BadgeAlignment.bottomRight),
       ),
       decoration: BoxDecoration(
           color: secondaryDarkColor(),
           borderRadius: const BorderRadius.all(Radius.circular(10))),
       width: w - 50,
       child: Card(
-
         elevation: 5,
         color: secondaryDarkColor(),
         child: Column(
