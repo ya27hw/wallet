@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:eth_wallet/util/library.dart' as widgets;
-import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Portfolio extends StatefulWidget {
   const Portfolio({Key? key}) : super(key: key);
@@ -13,25 +13,58 @@ class Portfolio extends StatefulWidget {
 class _PortfolioState extends State<Portfolio> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Floating Action Button (FAB)
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.more_vert),
-        backgroundColor: Colors.grey,
+    ValueNotifier<bool> dialOpen = ValueNotifier(false);
+
+    return WillPopScope(
+      onWillPop: () async {
+        if (dialOpen.value) {
+          dialOpen.value = false;
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+        // Floating Action Button (FAB)
+        floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_arrow,
+        openCloseDial: dialOpen,
+        backgroundColor: Colors.redAccent,
+        overlayColor: widgets.primaryDarkColor(),
+        overlayOpacity: 0.5,
+        spacing: 15,
+        spaceBetweenChildren: 9,
+        closeManually: true,
+        children: [
+          SpeedDialChild(
+              child: const Icon(LineIcons.arrowDown),
+              label: 'Receive',
+              onTap: () {
+                print('Mail Tapped');
+              }
+          ),
+          SpeedDialChild(
+              child: const Icon(LineIcons.arrowUp),
+              label: 'Send',
+              onTap: () {
+                print('Copy Tapped');
+              }
+          ),
+        ],
       ),
       backgroundColor: const Color(0xFF1B1E38),
       // The appbar
       appBar: AppBar(
         centerTitle: true,
         leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(
-              Icons.menu,
-              color: Colors.white,
-            ),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+          builder: (context) =>
+              IconButton(
+                icon: const Icon(
+                  Icons.menu,
+                  color: Colors.white,
+                ),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
         ),
         title: const Text(
           "My Wallet",
@@ -142,6 +175,6 @@ class _PortfolioState extends State<Portfolio> {
           ],
         ),
       ),
-    );
+    ),);
   }
 }
