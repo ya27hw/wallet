@@ -9,6 +9,8 @@ const String importWallet = "importWallet";
 const String importWalletTwo = "importWalletTwo";
 const String createWallet = "createWallet";
 const String portfolio = "portfolio";
+const String verify = "verify";
+const String activity = "activity";
 
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
@@ -30,6 +32,12 @@ Route<dynamic> controller(RouteSettings settings) {
 
     case portfolio:
       return MaterialPageRoute(builder: (context) => const home.Portfolio());
+
+      case activity:
+      return MaterialPageRoute(builder: (context) => const home.Activity());
+
+    case verify:
+      return MaterialPageRoute(builder: (context) => const home.Verify());
 
     default:
       throw ("Error no route");

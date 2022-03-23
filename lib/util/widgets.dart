@@ -54,7 +54,8 @@ class Helper {
   }
 
   // This is used to display the card which contains the main balance
-  Widget mainBalance(double w, double balance, double change) {
+  Widget mainBalance(
+      double w, double balance, double change, double tokenBalance) {
     BalanceIndicator mbi = BalanceIndicator();
 
     if (change > 0) {
@@ -115,9 +116,9 @@ class Helper {
               ]),
           Container(
             padding: const EdgeInsets.only(top: 13),
-            child: const Text(
-              "8.2348 ETH",
-              style: TextStyle(fontSize: 19, color: Colors.white70),
+            child: Text(
+              "$tokenBalance ETH",
+              style: const TextStyle(fontSize: 19, color: Colors.white70),
             ),
           )
         ],

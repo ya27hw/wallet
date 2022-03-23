@@ -56,13 +56,14 @@ class _PortfolioState extends State<Portfolio> {
         appBar: AppBar(
           centerTitle: true,
           leading: Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(
-                Icons.menu,
-                color: Colors.white,
-              ),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            ),
+            builder: (context) =>
+                IconButton(
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                  ),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                ),
           ),
           title: const Text(
             "My Wallet",
@@ -132,7 +133,8 @@ class _PortfolioState extends State<Portfolio> {
                     )
                   ],
                 ),
-                onTap: () {
+                onTap: () async{
+                  await widgets.deleteFile("wallet.json");
                   Navigator.pushNamedAndRemoveUntil(
                       context, "splashLogin", (Route<dynamic> route) => false);
                 },
@@ -145,10 +147,24 @@ class _PortfolioState extends State<Portfolio> {
             children: <Widget>[
               // Main Balance Card (MBC)
               Padding(
-                padding: const EdgeInsets.only(top: 35),
-                child: widgets.Helper()
-                    .mainBalance(widgets.getWidth(context), 99999.99, -99.99),
-              ),
+                  padding: const EdgeInsets.only(top: 35),
+                  child: FutureBuilder<double>(
+                    future: backend.Web3().getMainTokenBalance(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<double> snapshot) {
+                      Widget data;
+                      if (snapshot.hasData) {
+                        data = widgets.Helper().mainBalance(
+                            widgets.getWidth(context), 99, 9.99,
+                            snapshot.data!);
+                      } else if (snapshot.hasError) {
+                        data = const Text("Error");
+                      } else {
+                        data = const Text('Awaiting result...');
+                      }
+                      return data;
+                    },
+                  )),
               // Extra space between tokens and MBC
               const Padding(
                 padding: EdgeInsets.only(top: 40),

@@ -97,7 +97,7 @@ class _ImportWalletTwoState extends State<ImportWalletTwo> {
 
                   String chosenPrivKey = addyMap[chosenAddress];
 
-                  await be.Web3().createWallet(chosenPrivKey);
+                  await be.Web3().loadWallet(chosenPrivKey);
 
                   // Move onto TODO page
                   Navigator.pushNamedAndRemoveUntil(

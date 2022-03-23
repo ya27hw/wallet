@@ -23,6 +23,22 @@ Future<String> get localPath async {
   return directory.path;
 }
 
+Future<void> deleteFile(String fileName) async {
+  final path = await localPath;
+  final file = File('$path/$fileName');
+  
+  if (await file.exists()) {
+    await file.delete();
+  }
+}
+
+Future<bool> checkIfFileExists(String fileName) async {
+  final path = await localPath;
+  final file = File('$path/$fileName');
+
+  return file.exists();
+} 
+
 Future<File> get localFile async {
   final path = await localPath;
   return File('$path/wallet.json');

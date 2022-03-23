@@ -11,17 +11,8 @@ class CreateWallet extends StatefulWidget {
 
 class _CreateWalletState extends State<CreateWallet> {
   final TextEditingController _passwordController = TextEditingController();
-
-  late bool _continueDisabled;
-  late bool _isLoading;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _continueDisabled = false;
-    _isLoading = false;
-  }
+  bool _continueDisabled = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -90,8 +81,10 @@ class _CreateWalletState extends State<CreateWallet> {
                 // CONTINUE Button
                 child: ElevatedButton(
                   child: _isLoading
-                      ? const CircularProgressIndicator(
+                      ? CircularProgressIndicator(
+                          backgroundColor: Colors.black,
                           color: Colors.white,
+                          strokeWidth: 3,
                         )
                       : const Text("Continue"),
                   style: ElevatedButton.styleFrom(
@@ -113,11 +106,16 @@ class _CreateWalletState extends State<CreateWallet> {
                           setState(() {
                             _isLoading = true;
                           });
+
+                          // wait for 5 seconds
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+
                           await be.Web3()
                               .createWallet(_passwordController.text);
 
                           // Move onto TODO page
-                          Navigator.pushNamedAndRemoveUntil(context,
+                          await Navigator.pushNamedAndRemoveUntil(context,
                               "portfolio", (Route<dynamic> route) => false);
                         },
                 ),
