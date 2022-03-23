@@ -1,8 +1,17 @@
+import 'package:eth_wallet/backend/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:eth_wallet/routes/library.dart' as route;
 import 'package:eth_wallet/login/library.dart' as login;
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+late HiveDB boxxx;
+
+Future<void> main() async {
+  await Hive.initFlutter();
+  boxxx = HiveDB();
+  await boxxx.createBox("myBox");
+  boxxx.addData("FUCK", "U");
   runApp(const MyApp());
 }
 

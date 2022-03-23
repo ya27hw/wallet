@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:eth_wallet/util/library.dart' as utils;
+import 'package:eth_wallet/backend/library.dart' as be;
 
 class ImportWallet extends StatefulWidget {
   const ImportWallet({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class _ImportWalletState extends State<ImportWallet> {
   late int _seedLength;
   late Color _seedWordColor;
   late bool _continueDisabled;
+  late bool _isLoading;
 
   @override
   void initState() {
@@ -21,6 +23,7 @@ class _ImportWalletState extends State<ImportWallet> {
     _seedLength = 0;
     _continueDisabled = false;
     _seedWordColor = Colors.red;
+    _isLoading = false;
   }
 
   @override
@@ -88,7 +91,11 @@ class _ImportWalletState extends State<ImportWallet> {
               padding: const EdgeInsets.only(top: 30),
               // CONTINUE Button
               child: ElevatedButton(
-                child: const Text("Continue"),
+                child: _isLoading
+                    ? const CircularProgressIndicator(
+                        backgroundColor: Colors.white,
+                      )
+                    : const Text("Continue"),
                 style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(fontSize: 17),
                   padding: EdgeInsets.symmetric(
@@ -102,9 +109,15 @@ class _ImportWalletState extends State<ImportWallet> {
                 ),
                 onPressed: !_continueDisabled
                     ? null
-                    : () {
+                    : () async {
                         // Move onto TODO page
-                        Navigator.of(context).pop();
+                        var accountList = await be.Web3()
+                            .importWallet(_seedPhraseController.text);
+
+                        Navigator.pushNamed(context, "importWalletTwo",
+                            arguments: {
+                          "accountList" : accountList
+                            });
                       },
               ),
             ),

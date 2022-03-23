@@ -1,8 +1,13 @@
+import 'dart:math';
+
+import 'package:eth_wallet/main.dart';
 import 'package:eth_wallet/util/library.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:rotated_corner_decoration/rotated_corner_decoration.dart';
+import 'package:eth_wallet/backend/library.dart';
 
 class Helper {
   Widget Button(double width, String msg,
@@ -22,6 +27,7 @@ class Helper {
       onPressed: () {
         if (ctx != null && routeName != null) {
           Navigator.pushNamed(ctx, routeName);
+          boxxx.printAll();
         }
       },
     );
