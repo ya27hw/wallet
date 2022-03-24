@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:eth_wallet/util/library.dart' as widgets;
+import 'package:eth_wallet/util/library.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:eth_wallet/backend/library.dart' as backend;
@@ -31,23 +31,42 @@ class _PortfolioState extends State<Portfolio> {
           animatedIcon: AnimatedIcons.menu_arrow,
           openCloseDial: dialOpen,
           backgroundColor: Colors.redAccent,
-          overlayColor: widgets.primaryDarkColor(),
+          overlayColor: primaryDarkColor(),
           overlayOpacity: 0.5,
           spacing: 15,
           spaceBetweenChildren: 9,
           closeManually: true,
           children: [
             SpeedDialChild(
+                child: const Icon(LineIcons.plus),
+                label: 'Add Token',
+                labelBackgroundColor: secondaryDarkColor(),
+                backgroundColor: secondaryDarkColor(),
+                onTap: () {
+                  Navigator.pushNamed(context, 'addToken');
+                  setState(() {
+                    dialOpen.value = false;
+                  });
+                }),
+            SpeedDialChild(
                 child: const Icon(LineIcons.arrowDown),
                 label: 'Receive',
+                labelBackgroundColor: secondaryDarkColor(),
+                backgroundColor: secondaryDarkColor(),
                 onTap: () {
-                  print('Mail Tapped');
+                  setState(() {
+                    dialOpen.value = false;
+                  });
                 }),
             SpeedDialChild(
                 child: const Icon(LineIcons.arrowUp),
+                labelBackgroundColor: secondaryDarkColor(),
+                backgroundColor: secondaryDarkColor(),
                 label: 'Send',
                 onTap: () {
-                  print('Copy Tapped');
+                  setState(() {
+                    dialOpen.value = false;
+                  });
                 }),
           ],
         ),
@@ -71,16 +90,16 @@ class _PortfolioState extends State<Portfolio> {
           backgroundColor: const Color(0xFF32385F),
         ),
         drawer: Drawer(
-          backgroundColor: widgets.primaryDarkColor(),
+          backgroundColor: primaryDarkColor(),
           child: ListView(
             // Important: Remove any padding from the ListView.
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
                 decoration: BoxDecoration(
-                  color: widgets.secondaryDarkColor(),
+                  color: secondaryDarkColor(),
                 ),
-                child: Text('My Wallet'),
+                child: const Text('My Wallet'),
               ),
               ListTile(
                 title: Wrap(
@@ -133,7 +152,7 @@ class _PortfolioState extends State<Portfolio> {
                   ],
                 ),
                 onTap: () async {
-                  await widgets.deleteFile("wallet.json");
+                  await deleteFile("wallet.json");
                   Navigator.pushNamedAndRemoveUntil(
                       context, "splashLogin", (Route<dynamic> route) => false);
                 },
@@ -157,14 +176,9 @@ class _PortfolioState extends State<Portfolio> {
                             snapshot.data!["mainTokenBalance"]!;
                         double nativeTokenPrice =
                             snapshot.data!["nativeTokenPrice"]!;
-                        print(mainTokenBalance);
-                        print(nativeTokenPrice);
-                        data = widgets.Helper().mainBalance(
-                            widgets.getWidth(context),
-                            (nativeTokenPrice * mainTokenBalance)
-                                .floorToDouble(),
-                            9.99,
-                            mainTokenBalance);
+
+                        data = Helper().mainBalance(getWidth(context),
+                            (nativeTokenPrice), 9.99, mainTokenBalance);
                       } else if (snapshot.hasError) {
                         data = const Text("Error");
                       } else {
@@ -180,16 +194,17 @@ class _PortfolioState extends State<Portfolio> {
 
               Expanded(
                   child: ListView.builder(
+                      shrinkWrap: true,
                       itemCount: 1,
                       itemBuilder: (context, p) {
                         return Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 25, vertical: 5),
-                          width: widgets.getWidth(context),
-                          child: widgets.Helper().balanceCards(
-                              widgets.getWidth(context), 0, 0, 0, 0),
+                          width: getWidth(context),
+                          child: Helper()
+                              .balanceCards(getWidth(context), 0, 0, 0, 0),
                         );
-                      }))
+                      })),
             ],
           ),
         ),

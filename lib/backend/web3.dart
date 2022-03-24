@@ -1,12 +1,11 @@
-import 'package:eth_wallet/main.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import "package:eth_wallet/util/library.dart" as utils;
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 import 'dart:math';
-import 'dart:io';
 import 'package:hdkey/hdkey.dart';
+import 'package:bip39/bip39.dart' as bip39;
 
 var myWallet;
 Box myBox = Hive.box("myBox");
@@ -30,6 +29,15 @@ class Web3 {
         return EtherUnit.ether;
       default:
         return EtherUnit.ether;
+    }
+  }
+
+  bool validateAddress(String address) {
+    try {
+      EthereumAddress.fromHex(address);
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -62,9 +70,13 @@ class Web3 {
     utils.writeWallet(wJson);
   }
 
-  void _saveKeys() {}
-
   Future<List<utils.ImportedAddresses>> importWallet(String mnemonic) async {
+    // Validate mnemonic first
+    bool isValid = bip39.validateMnemonic(mnemonic);
+    if (!isValid) {
+      return [];
+    }
+
     final hdwallet = HDKey.fromMnemonic(mnemonic);
     var walletHdpath = "m/44'/60'/0'/0";
 
@@ -92,30 +104,80 @@ class Web3 {
     return accs;
   }
 
-  Future<double> getMainTokenBalance() async {
-    //  TODO
+  Future<double> _getMainTokenBalance() async {
     var apiUrl = myBox.get(myBox.get("defaultNetwork")).rpcURL;
-    print(apiUrl);
-    print("GAY GAY GAY GAY");
     var httpClient = Client();
     var ethClient = Web3Client(apiUrl, httpClient);
     EtherAmount balance =
         await ethClient.getBalance(myWallet.privateKey.address);
-    return balance.getValueInUnit(EtherUnit.ether);
+    final mainBalance = balance.getValueInUnit(EtherUnit.ether);
+    // Format to 4 d.p.
+    return formatDouble(mainBalance, 4);
+  }
+
+  Web3Client _getClient() {
+    var apiUrl = myBox.get(myBox.get("defaultNetwork")).rpcURL;
+    var httpClient = Client();
+    return Web3Client(apiUrl, httpClient);
+  }
+
+  DeployedContract _getTokenContract(String contractAddress) {
+    String abiCode = myBox.get("tokenABI");
+    EthereumAddress contractAddressObj =
+        EthereumAddress.fromHex(contractAddress);
+    return DeployedContract(
+        ContractAbi.fromJson(abiCode, "tokenABI"), contractAddressObj);
+  }
+
+  Future<int> _getDecimal(String contractAddress) async {
+    Web3Client client = _getClient();
+    DeployedContract contract = _getTokenContract(contractAddress);
+    final decimalsFunction = contract.function("decimals");
+
+    try {
+      final decimals = await client
+          .call(contract: contract, function: decimalsFunction, params: []);
+
+          // Convert to int
+          return int.parse(decimals.first.toString());
+
+    } catch (e) {
+      print(e);
+      return 0;
+    }
+  }
+
+  Future<String> _getSymbol(String contractAddress) async {
+    Web3Client client = _getClient();
+    DeployedContract contract = _getTokenContract(contractAddress);
+    final symbolFunction = contract.function("symbol");
+
+    try {
+      final symbol = await client
+          .call(contract: contract, function: symbolFunction, params: []);
+
+      return symbol.first;
+    } catch (e) {
+      return "";
+    }
+  }
+
+  Future<dynamic> getSymbolDecimal(String contractAddress) async {
+    int decimals = await _getDecimal(contractAddress);
+    String symbol = await _getSymbol(contractAddress);
+    print("Decimals: $decimals");
+    print("Symbol: $symbol");
+    return {"decimals": decimals, "symbol": symbol};
   }
 
   Future<double> getTokenPrice(String tokenAddress) async {
     // TODO get token price
-    String apiUrl = myBox.get(myBox.get("defaultNetwork")).rpcURL;
-    // var httpClient = Client();
-    // var ethClient = Web3Client(apiUrl, httpClient);
-    // ethClient
     return 0;
   }
 
   Future<double> _getNativeTokenPrice() async {
     utils.Network defaultNetwork = myBox.get(myBox.get("defaultNetwork"));
-    final client = Web3Client(defaultNetwork.rpcURL, Client());
+    final Web3Client client = _getClient();
 
     final EthereumAddress stableCoinAddress =
         EthereumAddress.fromHex(defaultNetwork.stableCoinAddress);
@@ -139,20 +201,26 @@ class Web3 {
           ]);
 
       final amount = EtherAmount.inWei(etherPrice.first[1]);
-      return amount.getValueInUnit(stringToUnit(defaultNetwork.unit));
+      double doubleAmount =
+          amount.getValueInUnit(stringToUnit(defaultNetwork.unit));
+      return formatDouble(doubleAmount, 2);
     } catch (e) {
       return -1;
     }
   }
 
-  Future<Map<String, double>> mainBalanceCard() async {
+  double formatDouble(double value, int decimalPlaces) {
+    return double.parse(value.toStringAsFixed(decimalPlaces));
+  }
 
-    final mainTokenBalance = await getMainTokenBalance();
-    final nativeTokenPrice =  await _getNativeTokenPrice();
+  Future<Map<String, double>> mainBalanceCard() async {
+    final mainTokenBalance = await _getMainTokenBalance();
+    var nativeTokenPrice = await _getNativeTokenPrice();
+    nativeTokenPrice *= mainTokenBalance;
 
     return {
       "mainTokenBalance": mainTokenBalance,
-      "nativeTokenPrice": nativeTokenPrice,
+      "nativeTokenPrice": formatDouble(nativeTokenPrice, 2),
     };
   }
 }

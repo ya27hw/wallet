@@ -11,6 +11,7 @@ const String createWallet = "createWallet";
 const String portfolio = "portfolio";
 const String verify = "verify";
 const String activity = "activity";
+const String addToken = "addToken";
 
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
@@ -38,6 +39,9 @@ Route<dynamic> controller(RouteSettings settings) {
 
     case verify:
       return MaterialPageRoute(builder: (context) => const home.Verify());
+
+    case addToken:
+      return MaterialPageRoute(builder: (context) => const home.AddToken());
 
     default:
       throw ("Error no route");

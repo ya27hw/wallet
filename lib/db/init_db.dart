@@ -9,7 +9,7 @@ Future<void> initDB() async {
   loadNetworks();
   loadTokenABI();
   loadSwapABI();
-  box.put("defaultNetwork", "ropsten");
+  box.put("defaultNetwork", "erc20");
 }
 
 Future<void> loadTokenABI() async {

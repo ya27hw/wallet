@@ -110,14 +110,24 @@ class _ImportWalletState extends State<ImportWallet> {
                 onPressed: !_continueDisabled
                     ? null
                     : () async {
-                        // Move onto TODO page
                         var accountList = await be.Web3()
                             .importWallet(_seedPhraseController.text);
 
-                        Navigator.pushNamed(context, "importWalletTwo",
-                            arguments: {
-                          "accountList" : accountList
-                            });
+                        if (accountList.isEmpty) {
+                          // Display error msg
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Invalid Seed Phrase",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } else {
+                          Navigator.pushNamed(context, "importWalletTwo",
+                              arguments: {"accountList": accountList});
+                        }
                       },
               ),
             ),
