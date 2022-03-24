@@ -14,7 +14,7 @@ Future<void> main() async {
   boxxx = HiveDB();
   await boxxx.createBox("myBox");
 
-  // ---------- Intial route ----------
+  // ---------- Initial route ----------
   bool exists = await checkIfFileExists("wallet.json");
 
   // ---------- Flutter ----------
