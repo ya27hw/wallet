@@ -58,7 +58,6 @@ class _AddTokenState extends State<AddToken> {
                     // Validate address
                     bool isValidAddress = be.Web3().validateAddress(value);
                     if (isValidAddress) {
-                      // TODO : Retrieve Symbol + Decimals
                       var decimalSymbol =
                           await be.Web3().getSymbolDecimal(value);
                       setState(() {

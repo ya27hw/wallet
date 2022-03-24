@@ -32,6 +32,10 @@ class Web3 {
     }
   }
 
+  String returnAddress() {
+    return myWallet.privateKey.address.hex;
+  }
+
   bool validateAddress(String address) {
     try {
       EthereumAddress.fromHex(address);
@@ -138,9 +142,8 @@ class Web3 {
       final decimals = await client
           .call(contract: contract, function: decimalsFunction, params: []);
 
-          // Convert to int
-          return int.parse(decimals.first.toString());
-
+      // Convert to int
+      return int.parse(decimals.first.toString());
     } catch (e) {
       print(e);
       return 0;
