@@ -1,0 +1,120 @@
+{
+  "tokenNetworks": {
+    "ropsten": {
+      "chainID": 3,
+      "unitFormat": "mwei",
+      "api": "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+      "usdt": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
+      "swap": {
+        "contract": "0xc778417E063141139Fce010982780140Aa0cD5Ab",
+        "router": {
+          "address": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+        }
+      }
+    },
+    "fantom": {
+      "chainID": 0,
+      "unitFormat": "mwei",
+      "api": "https://rpcapi.fantom.network",
+      "websocketAPI": "wss://apis.ankr.com/wss/d41c1d10450f495d8c8bbddf2b52fc0f/b01a3172766fdfdd5dd24c56b48d74ae/fantom/full/main",
+      "usdt": "0x049d68029688eabf473097a2fc38ef61633a3c7a",
+      "swap": {
+        "contract": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+        "factory": {
+          "address": "0x152eE697f2E276fA89E96742e9bB9aB1F2E61bE3",
+          "ABI": [
+            "event PairCreated(address indexed token0, address indexed token1, address pair, uint)"
+          ]
+        },
+        "router": {
+          "address": "0xF491e7B69E4244ad4002BC14e878a34207E38c29",
+          "ABI": [
+            "function getAmountsOut(uint amountIn, address[] path) view returns (uint[] amounts)"
+          ]
+        }
+      }
+    },
+    "erc20": {
+      "chainID": 1,
+      "unitFormat": "mwei",
+      "api": "https://mainnet.infura.io/v3/fea7086935844727af1b78400205e471",
+      "websocketAPI": "wss://mainnet.infura.io/ws/v3/fea7086935844727af1b78400205e471",
+      "usdt": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "swap": {
+        "contract": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "factory": {
+          "address": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+          "ABI": [
+            "event PairCreated(address indexed token0, address indexed token1, address pair, uint)"
+          ]
+        },
+        "router": {
+          "address": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+          "ABI": [
+            "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)"
+          ]
+        }
+      }
+    },
+    "bsc20": {
+      "chainID": 56,
+      "unitFormat": "ether",
+      "api": "https://bsc-dataseed1.binance.org",
+      "websocketAPI": "wss://apis.ankr.com/wss/dbae76e1f27e419f90289b46223dd1cc/b01a3172766fdfdd5dd24c56b48d74ae/binance/full/main",
+      "usdt": "0x55d398326f99059ff775485246999027b3197955",
+      "swap": {
+        "contract": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        "factory": {
+          "address": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+          "ABI": [
+            "event PairCreated(address indexed token0, address indexed token1, address pair, uint)"
+          ]
+        },
+        "router": {
+          "address": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+          "ABI": [
+            "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)"
+          ]
+        }
+      }
+    },
+    "bsc20-test": {
+      "chainID": 97,
+      "unitFormat": "ether",
+      "api": "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      "websocketAPI": "wss://apis.ankr.com/wss/dbae76e1f27e419f90289b46223dd1cc/b01a3172766fdfdd5dd24c56b48d74ae/binance/full/main",
+      "usdt": "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+      "swap": {
+        "contract": "0x1024efdd8317773e50af245177d5e99b3360d25b",
+        "router": {
+          "address": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+          "ABI": [
+            "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)"
+          ]
+        }
+      }
+    },
+    "matic": {
+      "chainID": 0,
+      "unitFormat": "mwei",
+      "api": "https://rpc-mainnet.maticvigil.com/",
+      "websocketAPI": "wss://apis.ankr.com/wss/07b631b7b9e248d6bfad2a24941fa00d/b01a3172766fdfdd5dd24c56b48d74ae/polygon/full/main",
+      "usdt": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "swap": {
+        "contract": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+        "factory": {
+          "address": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
+          "ABI": [
+            "event PairCreated(address indexed token0, address indexed token1, address pair, uint)"
+          ]
+        },
+        "router": {
+          "address": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
+          "ABI": [
+            "function getAmountsOut(uint amountIn, address[] path) view returns (uint[] amounts)"
+          ]
+        }
+      }
+    }
+  }
+}

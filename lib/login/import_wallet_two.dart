@@ -99,7 +99,6 @@ class _ImportWalletTwoState extends State<ImportWalletTwo> {
 
                   await be.Web3().loadWallet(chosenPrivKey);
 
-                  // Move onto TODO page
                   Navigator.pushNamedAndRemoveUntil(
                       context, "portfolio", (Route<dynamic> route) => false);
                 },
@@ -107,7 +106,6 @@ class _ImportWalletTwoState extends State<ImportWalletTwo> {
             ],
           ),
         )
-        // Create a radio button list with values from addresslist
 
         );
   }

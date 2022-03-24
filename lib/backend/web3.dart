@@ -1,4 +1,5 @@
 import 'package:eth_wallet/main.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import "package:eth_wallet/util/library.dart" as utils;
 import 'package:web3dart/crypto.dart';
@@ -8,8 +9,30 @@ import 'dart:io';
 import 'package:hdkey/hdkey.dart';
 
 var myWallet;
+Box myBox = Hive.box("myBox");
 
 class Web3 {
+  EtherUnit stringToUnit(String unit) {
+    switch (unit) {
+      case "wei":
+        return EtherUnit.wei;
+      case "kwei":
+        return EtherUnit.kwei;
+      case "mwei":
+        return EtherUnit.mwei;
+      case "gwei":
+        return EtherUnit.gwei;
+      case "szabo":
+        return EtherUnit.szabo;
+      case "finney":
+        return EtherUnit.finney;
+      case "ether":
+        return EtherUnit.ether;
+      default:
+        return EtherUnit.ether;
+    }
+  }
+
   Future<bool> loadWalletJson(String password) async {
     String content = await utils.readWallet();
     try {
@@ -71,11 +94,65 @@ class Web3 {
 
   Future<double> getMainTokenBalance() async {
     //  TODO
-    var apiUrl = "https://data-seed-prebsc-1-s1.binance.org:8545/";
+    var apiUrl = myBox.get(myBox.get("defaultNetwork")).rpcURL;
+    print(apiUrl);
+    print("GAY GAY GAY GAY");
     var httpClient = Client();
     var ethClient = Web3Client(apiUrl, httpClient);
     EtherAmount balance =
         await ethClient.getBalance(myWallet.privateKey.address);
     return balance.getValueInUnit(EtherUnit.ether);
+  }
+
+  Future<double> getTokenPrice(String tokenAddress) async {
+    // TODO get token price
+    String apiUrl = myBox.get(myBox.get("defaultNetwork")).rpcURL;
+    // var httpClient = Client();
+    // var ethClient = Web3Client(apiUrl, httpClient);
+    // ethClient
+    return 0;
+  }
+
+  Future<double> _getNativeTokenPrice() async {
+    utils.Network defaultNetwork = myBox.get(myBox.get("defaultNetwork"));
+    final client = Web3Client(defaultNetwork.rpcURL, Client());
+
+    final EthereumAddress stableCoinAddress =
+        EthereumAddress.fromHex(defaultNetwork.stableCoinAddress);
+    final EthereumAddress nativeTokenAddress =
+        EthereumAddress.fromHex(defaultNetwork.nativeTokenAddress);
+    final EthereumAddress swapRouter =
+        EthereumAddress.fromHex(defaultNetwork.swapRouterAddress);
+
+    try {
+      String swapABI = myBox.get("swapABI");
+      final swapContract = DeployedContract(
+          ContractAbi.fromJson(swapABI, "UniswapV2Router02"), swapRouter);
+      final getAmountsOutFunction = swapContract.function('getAmountsOut');
+      final oneETH = EtherAmount.fromUnitAndValue(EtherUnit.ether, 1);
+      final etherPrice = await client.call(
+          contract: swapContract,
+          function: getAmountsOutFunction,
+          params: [
+            oneETH.getInWei,
+            [nativeTokenAddress, stableCoinAddress]
+          ]);
+
+      final amount = EtherAmount.inWei(etherPrice.first[1]);
+      return amount.getValueInUnit(stringToUnit(defaultNetwork.unit));
+    } catch (e) {
+      return -1;
+    }
+  }
+
+  Future<Map<String, double>> mainBalanceCard() async {
+
+    final mainTokenBalance = await getMainTokenBalance();
+    final nativeTokenPrice =  await _getNativeTokenPrice();
+
+    return {
+      "mainTokenBalance": mainTokenBalance,
+      "nativeTokenPrice": nativeTokenPrice,
+    };
   }
 }

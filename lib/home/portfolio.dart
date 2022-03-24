@@ -56,14 +56,13 @@ class _PortfolioState extends State<Portfolio> {
         appBar: AppBar(
           centerTitle: true,
           leading: Builder(
-            builder: (context) =>
-                IconButton(
-                  icon: const Icon(
-                    Icons.menu,
-                    color: Colors.white,
-                  ),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                ),
+            builder: (context) => IconButton(
+              icon: const Icon(
+                Icons.menu,
+                color: Colors.white,
+              ),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
           ),
           title: const Text(
             "My Wallet",
@@ -133,7 +132,7 @@ class _PortfolioState extends State<Portfolio> {
                     )
                   ],
                 ),
-                onTap: () async{
+                onTap: () async {
                   await widgets.deleteFile("wallet.json");
                   Navigator.pushNamedAndRemoveUntil(
                       context, "splashLogin", (Route<dynamic> route) => false);
@@ -148,15 +147,24 @@ class _PortfolioState extends State<Portfolio> {
               // Main Balance Card (MBC)
               Padding(
                   padding: const EdgeInsets.only(top: 35),
-                  child: FutureBuilder<double>(
-                    future: backend.Web3().getMainTokenBalance(),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<double> snapshot) {
+                  child: FutureBuilder<Map<String, double>>(
+                    future: backend.Web3().mainBalanceCard(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<Map<String, double>> snapshot) {
                       Widget data;
                       if (snapshot.hasData) {
+                        double mainTokenBalance =
+                            snapshot.data!["mainTokenBalance"]!;
+                        double nativeTokenPrice =
+                            snapshot.data!["nativeTokenPrice"]!;
+                        print(mainTokenBalance);
+                        print(nativeTokenPrice);
                         data = widgets.Helper().mainBalance(
-                            widgets.getWidth(context), 99, 9.99,
-                            snapshot.data!);
+                            widgets.getWidth(context),
+                            (nativeTokenPrice * mainTokenBalance)
+                                .floorToDouble(),
+                            9.99,
+                            mainTokenBalance);
                       } else if (snapshot.hasError) {
                         data = const Text("Error");
                       } else {
@@ -172,18 +180,14 @@ class _PortfolioState extends State<Portfolio> {
 
               Expanded(
                   child: ListView.builder(
-                      itemCount: 10,
+                      itemCount: 1,
                       itemBuilder: (context, p) {
                         return Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 25, vertical: 5),
                           width: widgets.getWidth(context),
                           child: widgets.Helper().balanceCards(
-                              widgets.getWidth(context),
-                              0.50032,
-                              2803.30,
-                              1402.55,
-                              1.03),
+                              widgets.getWidth(context), 0, 0, 0, 0),
                         );
                       }))
             ],

@@ -27,7 +27,6 @@ class Helper {
       onPressed: () {
         if (ctx != null && routeName != null) {
           Navigator.pushNamed(ctx, routeName);
-          boxxx.printAll();
         }
       },
     );

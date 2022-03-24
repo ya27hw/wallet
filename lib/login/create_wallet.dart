@@ -114,7 +114,6 @@ class _CreateWalletState extends State<CreateWallet> {
                           await be.Web3()
                               .createWallet(_passwordController.text);
 
-                          // Move onto TODO page
                           await Navigator.pushNamedAndRemoveUntil(context,
                               "portfolio", (Route<dynamic> route) => false);
                         },
