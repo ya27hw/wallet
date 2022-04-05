@@ -226,4 +226,8 @@ class Web3 {
       "nativeTokenPrice": formatDouble(nativeTokenPrice, 2),
     };
   }
+
+  Future<void> sendTransaction(String receivingAddress, double value) async {
+    // TODO : Send a transaction through the network.
+  }
 }
