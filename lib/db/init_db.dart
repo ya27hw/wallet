@@ -9,7 +9,7 @@ Future<void> initDB() async {
   loadNetworks();
   loadTokenABI();
   loadSwapABI();
-  box.put("defaultNetwork", "ropsten");
+  box.put("defaultNetwork", "bsc20-test");
 }
 
 Future<void> loadTokenABI() async {
@@ -32,12 +32,14 @@ Future<void> loadNetworks() async {
   // Loop thru keys and values
   for (var key in tokenNetworks.keys) {
     Network network = Network(
-        tokenNetworks[key]['unitFormat'],
-        tokenNetworks[key]['api'],
-        tokenNetworks[key]["usdt"],
-        tokenNetworks[key]['swap']["contract"],
-        tokenNetworks[key]['swap']["router"]["address"],
-        key);
+      tokenNetworks[key]['unitFormat'],
+      tokenNetworks[key]['api'],
+      tokenNetworks[key]["usdt"],
+      tokenNetworks[key]['swap']["contract"],
+      tokenNetworks[key]['swap']["router"]["address"],
+      key,
+      tokenNetworks[key]['chainID'],
+    );
     box.put(key, network);
   }
 }

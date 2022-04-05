@@ -227,7 +227,23 @@ class Web3 {
     };
   }
 
-  Future<void> sendTransaction(String receivingAddress, double value) async {
+  Future<void> sendTokenTransaction(
+      String receivingAddress, double value, bool isNative) async {
     // TODO : Send a transaction through the network.
+
+    utils.Network defaultNetwork =
+        myBox.get(myBox.get("defaultNetwork")) as utils.Network;
+    print(defaultNetwork.chainID);
+    // Convert value in ether to value in wei
+    BigInt valueWei = BigInt.from(value * pow(10, 18));
+    Web3Client ethClient = _getClient();
+    var transaction = Transaction(
+      to: EthereumAddress.fromHex(receivingAddress),
+      maxGas: 21000,
+      value: EtherAmount.inWei(valueWei),
+    );
+
+    await ethClient.sendTransaction(myWallet.privateKey, transaction,
+        chainId: defaultNetwork.chainID);
   }
 }

@@ -23,13 +23,14 @@ class NetworkAdapter extends TypeAdapter<Network> {
       fields[3] as String,
       fields[4] as String,
       fields[5] as String,
+      fields[6] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, Network obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.unit)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class NetworkAdapter extends TypeAdapter<Network> {
       ..writeByte(4)
       ..write(obj.swapRouterAddress)
       ..writeByte(5)
-      ..write(obj.networkName);
+      ..write(obj.networkName)
+      ..writeByte(6)
+      ..write(obj.chainID);
   }
 
   @override

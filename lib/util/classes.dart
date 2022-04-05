@@ -28,7 +28,14 @@ class Network extends HiveObject {
   final String swapRouterAddress;
   @HiveField(5)
   final String networkName;
-
-  Network(this.unit, this.rpcURL, this.stableCoinAddress,
-      this.nativeTokenAddress, this.swapRouterAddress, this.networkName);
+  @HiveField(6)
+  final int chainID;
+  Network(
+      this.unit,
+      this.rpcURL,
+      this.stableCoinAddress,
+      this.nativeTokenAddress,
+      this.swapRouterAddress,
+      this.networkName,
+      this.chainID);
 }
