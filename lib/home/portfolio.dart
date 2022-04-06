@@ -29,6 +29,10 @@ class _PortfolioState extends State<Portfolio> {
     // Retrieve other Tokens Balance
     // Basically it
 
+    final mainBalance = await backend.Web3().mainBalanceCard();
+    double mainTokenBalance = mainBalance["mainTokenBalance"]!;
+    double nativeTokenPrice = mainBalance["nativeTokenPrice"]!;
+
     final tokenBox = Hive.box("tokenBox");
     String defNetwork = backend.Web3().defaultNetwork;
     // Get all tokens of defaultNetwork
@@ -41,7 +45,11 @@ class _PortfolioState extends State<Portfolio> {
       tokens.add(temp);
     }
 
-    List<TokenInfo> tokenInfoList = await backend.Web3().getTokenPricesBatch(tokens);
+    List<TokenInfo> tokenInfoList =
+        await backend.Web3().getTokenPricesBatch(tokens);
+
+    final mainBalanceCard = Helper()
+        .mainBalance(getWidth(context), nativeTokenPrice, 0, mainTokenBalance);
   }
 
   Widget mainColumn() {
