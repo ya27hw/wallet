@@ -233,11 +233,11 @@ class _PortfolioState extends State<Portfolio> {
             ],
           ),
         ),
-        body: SafeArea(
-            child: Padding(
-          padding: EdgeInsets.only(top: 35),
-          child: RefreshIndicator(
-            onRefresh: () => _refreshProducts(context),
+        body: RefreshIndicator(
+          onRefresh: () => _refreshProducts(context),
+          child: SafeArea(
+              child: Padding(
+            padding: EdgeInsets.only(top: 35),
             child: FutureBuilder<List<Widget>>(
               future: _future,
               builder: (context, AsyncSnapshot<List<Widget>> snapshot) {
@@ -251,8 +251,8 @@ class _PortfolioState extends State<Portfolio> {
                 return const Center(child: CircularProgressIndicator());
               },
             ),
-          ),
-        )),
+          )),
+        ),
       ),
     );
   }
