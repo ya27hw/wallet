@@ -5,8 +5,6 @@ import 'package:hive/hive.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:eth_wallet/backend/library.dart' as backend;
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class Portfolio extends StatefulWidget {
   const Portfolio({Key? key}) : super(key: key);
@@ -16,109 +14,67 @@ class Portfolio extends StatefulWidget {
 }
 
 class _PortfolioState extends State<Portfolio> {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  Future<List<Widget>>? _future;
 
-  Future<void> _onRefresh() async {
-    // monitor network fetch
-    return await Future.delayed(const Duration(milliseconds: 2000));
+  @override
+  void initState() {
+    _future = getData();
+    super.initState();
   }
 
-  Future<void> getData() async {
+  Future<List<Widget>> getData() async {
     // Retrieve Main Token Balance
     // Retrieve other Tokens Balance
-    // Basically it
+    // Return Widget containing both;
 
     final mainBalance = await backend.Web3().mainBalanceCard();
     double mainTokenBalance = mainBalance["mainTokenBalance"]!;
     double nativeTokenPrice = mainBalance["nativeTokenPrice"]!;
 
+    final mainBalanceCard = Helper()
+        .mainBalance(getWidth(context), nativeTokenPrice, 0, mainTokenBalance);
+
     final tokenBox = Hive.box("tokenBox");
     String defNetwork = backend.Web3().defaultNetwork;
     // Get all tokens of defaultNetwork
-    final allTokens = tokenBox.get("defNetwork");
-    List<Token> tokens = [];
-
+    final tokens = tokenBox.get(defNetwork);
+    List<Token> allTokens = List.castFrom(tokens);
     // Iterate through keys of allTokens
-    for (var key in allTokens.keys) {
-      Token temp = allTokens[key] as Token;
-      tokens.add(temp);
+
+    if (allTokens.isEmpty) {
+      return <Widget>[
+        mainBalanceCard,
+        const Padding(padding: EdgeInsets.only(top: 50)),
+      ];
     }
 
     List<TokenInfo> tokenInfoList =
-        await backend.Web3().getTokenPricesBatch(tokens);
+        await backend.Web3().getTokenPricesBatch(allTokens);
 
-    final mainBalanceCard = Helper()
-        .mainBalance(getWidth(context), nativeTokenPrice, 0, mainTokenBalance);
-  }
+    final tokenListViewBuilder = ListView.builder(
+        shrinkWrap: true,
+        itemCount: tokenInfoList.length,
+        itemBuilder: (context, p) {
+          final temp = tokenInfoList[p];
+          final tempToken = temp.token;
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+            width: getWidth(context),
+            child: Helper().balanceCards(
+                getWidth(context),
+                temp.balance,
+                temp.priceUSD,
+                temp.balance * temp.priceUSD,
+                0,
+                tempToken.symbol),
+          );
+        });
 
-  Widget mainColumn() {
-    return Column(
-      children: <Widget>[
-        // Main Balance Card (MBC)
-        Padding(
-            padding: const EdgeInsets.only(top: 35),
-            child: FutureBuilder<Map<String, double>>(
-              future: backend.Web3().mainBalanceCard(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<Map<String, double>> snapshot) {
-                Widget data;
-                if (snapshot.hasData) {
-                  double mainTokenBalance = snapshot.data!["mainTokenBalance"]!;
-                  double nativeTokenPrice = snapshot.data!["nativeTokenPrice"]!;
-
-                  data = Helper().mainBalance(getWidth(context),
-                      (nativeTokenPrice), 9.99, mainTokenBalance);
-                } else if (snapshot.hasError) {
-                  data = const Text("Error");
-                } else {
-                  data = const Text('Awaiting result...');
-                }
-                return data;
-              },
-            )),
-        // Extra space between tokens and MBC
-        const Padding(
-          padding: EdgeInsets.only(top: 40),
-        ),
-        FutureBuilder<double>(
-          future: backend.Web3()
-              .getTokenPrice("0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", 12),
-          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
-            Widget data;
-            if (snapshot.hasData) {
-              double tokenPrice = snapshot.data!;
-              data = Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-                width: getWidth(context),
-                child: Helper().balanceCards(
-                    getWidth(context), 1, 9, snapshot.data!, 8, "UNI"),
-              );
-            } else if (snapshot.hasError) {
-              data = const Text("Error");
-            } else {
-              data = const Text('Awaiting result...');
-            }
-            return data;
-          },
-        ),
-
-        // Expanded(
-        //     child: ListView.builder(
-        //         shrinkWrap: true,
-        //         itemCount: 6,
-        //         itemBuilder: (context, p) {
-        //           return Container(
-        //             padding: const EdgeInsets.symmetric(
-        //                 horizontal: 25, vertical: 5),
-        //             width: getWidth(context),
-        //             child: Helper()
-        //                 .balanceCards(getWidth(context), 0, 0, 0, 0),
-        //           );
-        //         })),
-      ],
-    );
+    return [
+      mainBalanceCard,
+      const Padding(padding: EdgeInsets.only(top: 50)),
+      tokenListViewBuilder
+    ];
   }
 
   @override
@@ -277,11 +233,34 @@ class _PortfolioState extends State<Portfolio> {
             ],
           ),
         ),
-        body: LiquidPullToRefresh(
-          onRefresh: _onRefresh,
-          child: SafeArea(child: mainColumn()),
-        ),
+        body: SafeArea(
+            child: Padding(
+          padding: EdgeInsets.only(top: 35),
+          child: RefreshIndicator(
+            onRefresh: () => _refreshProducts(context),
+            child: FutureBuilder<List<Widget>>(
+              future: _future,
+              builder: (context, AsyncSnapshot<List<Widget>> snapshot) {
+                if (snapshot.hasData) {
+                  return Column(
+                    children: snapshot.data!,
+                  );
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
+          ),
+        )),
       ),
     );
+  }
+
+  Future<void> _refreshProducts(BuildContext context) async {
+    setState(() {
+      _future = getData();
+    });
+    await _future;
   }
 }

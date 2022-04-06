@@ -129,10 +129,9 @@ class Web3 {
     return Web3Client(apiUrl, httpClient);
   }
 
-  DeployedContract _getTokenContract(String contractAddress) {
+  DeployedContract _getTokenContract(String tokenAddress) {
     String abiCode = _myBox.get("tokenABI");
-    EthereumAddress contractAddressObj =
-        EthereumAddress.fromHex(contractAddress);
+    EthereumAddress contractAddressObj = EthereumAddress.fromHex(tokenAddress);
     return DeployedContract(
         ContractAbi.fromJson(abiCode, "tokenABI"), contractAddressObj);
   }
@@ -174,6 +173,7 @@ class Web3 {
 
       return symbol.first;
     } catch (e) {
+      print(e);
       return "";
     }
   }
@@ -181,22 +181,24 @@ class Web3 {
   Future<dynamic> getSymbolDecimal(String contractAddress) async {
     int decimals = await _getDecimal(contractAddress);
     String symbol = await _getSymbol(contractAddress);
-    print("Decimals: $decimals");
-    print("Symbol: $symbol");
     return {"decimals": decimals, "symbol": symbol};
   }
 
   Future<double> getTokenPrice(String tokenAddress, int decimals,
       [DeployedContract? tokenContract, DeployedContract? swapContract]) async {
     // TODO get token price
+
     final client = _getClient();
     Network network = _myBox.get(_myBox.get("defaultNetwork"));
+    if (tokenAddress == network.stableCoinAddress) {
+      return 1.0;
+    }
+
     swapContract = swapContract ?? _getSwapContract();
 
     final getAmountsOutFunction = swapContract.function("getAmountsOut");
 
     final oneETH = EtherAmount.fromUnitAndValue(EtherUnit.ether, 1);
-
     try {
       final balance = await client.call(
           contract: swapContract,
@@ -209,16 +211,15 @@ class Web3 {
             ]
           ]);
       final amount = EtherAmount.inWei(balance.first[1]);
-      print(balance);
-      final price = amount.getValueInUnit(stringToUnit(network.unit));
+      double price = amount.getValueInUnit(stringToUnit(network.unit));
       return price;
     } catch (e) {
       print(e);
-      return -1;
+      return 0;
     }
   }
 
-  Future<double> _tokenBalanceOf(String tokenAddress) async {
+  Future<double> _tokenBalanceOf(String tokenAddress, int decimals) async {
     final tokenContract = _getTokenContract(tokenAddress);
     final client = _getClient();
     final balanceOfFunction = tokenContract.function("balanceOf");
@@ -229,7 +230,9 @@ class Web3 {
           function: balanceOfFunction,
           params: [myWallet.privateKey.address]);
       final amount = EtherAmount.inWei(balance.first);
-      final tokenBalance = amount.getValueInUnit(stringToUnit("ether"));
+      double tokenBalance = amount.getInWei.toDouble() / pow(10, decimals);
+
+      // Format to 4 d.p.
       return tokenBalance;
     } catch (e) {
       print(e);
@@ -242,10 +245,13 @@ class Web3 {
     List<utils.TokenInfo> tokenInfoList = [];
     for (Token token in tokens) {
       double tokenPrice = await getTokenPrice(token.address, token.decimals);
-      double tokenBalance = await _tokenBalanceOf(token.address);
+      double tokenBalance =
+          await _tokenBalanceOf(token.address, token.decimals);
       utils.TokenInfo tempInfo =
           utils.TokenInfo(tokenBalance, tokenPrice, token);
       tokenInfoList.add(tempInfo);
+      print(
+          "Token: ${token.symbol}\nPrice: $tokenPrice\nBalance: $tokenBalance");
     }
     return tokenInfoList;
   }
@@ -274,12 +280,13 @@ class Web3 {
             oneETH.getInWei,
             [nativeTokenAddress, stableCoinAddress]
           ]);
-
+      print(etherPrice);
       final amount = EtherAmount.inWei(etherPrice.first[1]);
       double doubleAmount =
           amount.getValueInUnit(stringToUnit(defaultNetwork.unit));
       return formatDouble(doubleAmount, 2);
     } catch (e) {
+      print(e);
       return -1;
     }
   }
@@ -290,7 +297,9 @@ class Web3 {
 
   Future<Map<String, double>> mainBalanceCard() async {
     final mainTokenBalance = await _getMainTokenBalance();
-    var nativeTokenPrice = await _getNativeTokenPrice();
+    double nativeTokenPrice = await _getNativeTokenPrice();
+    print("Native Token Price: $nativeTokenPrice");
+
     nativeTokenPrice *= mainTokenBalance;
 
     return {

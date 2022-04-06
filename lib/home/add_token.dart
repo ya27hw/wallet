@@ -157,17 +157,24 @@ class _AddTokenState extends State<AddToken> {
                   onPressed: () async {
                     // pop screen
                     Token tempToken = Token(
-                        _contractAddressController.text,
                         _symbolController.text,
+                        _contractAddressController.text,
                         int.parse(_decimalsController.text));
-
+                    print("Added Token: " + tempToken.symbol);
+                    print("Added Token: " + tempToken.address);
+                    print("Added Token: " + tempToken.decimals.toString());
                     List<Token> tokens =
-                        tokenBox.get(defaultNetwork) ?? <Token>[];
+                        List.castFrom(tokenBox.get(defaultNetwork));
+
+                    // Remove token if it already exists
+                    tokens.removeWhere(
+                        (token) => token.address == tempToken.address);
                     tokens.add(tempToken);
                     tokenBox.put(defaultNetwork, tokens);
 
                     // Check if token is already in the list
-                    Navigator.pop(context);
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, "portfolio", (Route<dynamic> route) => false);
                   },
                 ),
               ),
