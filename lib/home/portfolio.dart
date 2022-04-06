@@ -40,6 +40,8 @@ class _PortfolioState extends State<Portfolio> {
       Token temp = allTokens[key] as Token;
       tokens.add(temp);
     }
+
+    List<TokenInfo> tokenInfoList = await backend.Web3().getTokenPricesBatch(tokens);
   }
 
   Widget mainColumn() {

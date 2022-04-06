@@ -218,7 +218,7 @@ class Web3 {
     }
   }
 
-  Future<double> tokenBalanceOf(String tokenAddress) async {
+  Future<double> _tokenBalanceOf(String tokenAddress) async {
     final tokenContract = _getTokenContract(tokenAddress);
     final client = _getClient();
     final balanceOfFunction = tokenContract.function("balanceOf");
@@ -235,15 +235,19 @@ class Web3 {
       print(e);
       return -1;
     }
-    return -1;
   }
 
-  Future<void> getTokenPricesBatch(List<Token> tokens) async {
+  Future<List<utils.TokenInfo>> getTokenPricesBatch(List<Token> tokens) async {
     // TODO get token prices
+    List<utils.TokenInfo> tokenInfoList = [];
     for (Token token in tokens) {
       double tokenPrice = await getTokenPrice(token.address, token.decimals);
-      double tokenBalance = 0;
+      double tokenBalance = await _tokenBalanceOf(token.address);
+      utils.TokenInfo tempInfo =
+          utils.TokenInfo(tokenBalance, tokenPrice, token);
+      tokenInfoList.add(tempInfo);
     }
+    return tokenInfoList;
   }
 
   Future<double> _getNativeTokenPrice() async {
