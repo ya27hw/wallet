@@ -218,11 +218,31 @@ class Web3 {
     }
   }
 
+  Future<double> tokenBalanceOf(String tokenAddress) async {
+    final tokenContract = _getTokenContract(tokenAddress);
+    final client = _getClient();
+    final balanceOfFunction = tokenContract.function("balanceOf");
+
+    try {
+      final balance = await client.call(
+          contract: tokenContract,
+          function: balanceOfFunction,
+          params: [myWallet.privateKey.address]);
+      final amount = EtherAmount.inWei(balance.first);
+      final tokenBalance = amount.getValueInUnit(stringToUnit("ether"));
+      return tokenBalance;
+    } catch (e) {
+      print(e);
+      return -1;
+    }
+    return -1;
+  }
+
   Future<void> getTokenPricesBatch(List<Token> tokens) async {
     // TODO get token prices
     for (Token token in tokens) {
       double tokenPrice = await getTokenPrice(token.address, token.decimals);
-      
+      double tokenBalance = 0;
     }
   }
 
@@ -277,7 +297,7 @@ class Web3 {
 
   Future<void> sendTokenTransaction(
       String receivingAddress, double value, bool isNative) async {
-    // TODO : Send a transaction through the network.
+    // TODO : Send a transaction through the network via other tokens.
 
     utils.Network defaultNetwork =
         _myBox.get(_myBox.get("defaultNetwork")) as utils.Network;

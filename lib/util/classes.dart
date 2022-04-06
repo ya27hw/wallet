@@ -14,6 +14,14 @@ class ImportedAddresses {
   ImportedAddresses(this.address, this.privateKey);
 }
 
+class TokenInfo {
+  final double balance;
+  final double priceUSD;
+  final Token token;
+
+  TokenInfo(this.balance, this.priceUSD, this.token);
+}
+
 @HiveType(typeId: 0)
 class Network extends HiveObject {
   @HiveField(0)

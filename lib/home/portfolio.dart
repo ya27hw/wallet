@@ -1,6 +1,7 @@
 import 'package:eth_wallet/home/receive.dart';
 import "package:flutter/material.dart";
 import 'package:eth_wallet/util/library.dart';
+import 'package:hive/hive.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:eth_wallet/backend/library.dart' as backend;
@@ -23,6 +24,24 @@ class _PortfolioState extends State<Portfolio> {
     return await Future.delayed(const Duration(milliseconds: 2000));
   }
 
+  Future<void> getData() async {
+    // Retrieve Main Token Balance
+    // Retrieve other Tokens Balance
+    // Basically it
+
+    final tokenBox = Hive.box("tokenBox");
+    String defNetwork = backend.Web3().defaultNetwork;
+    // Get all tokens of defaultNetwork
+    final allTokens = tokenBox.get("defNetwork");
+    List<Token> tokens = [];
+
+    // Iterate through keys of allTokens
+    for (var key in allTokens.keys) {
+      Token temp = allTokens[key] as Token;
+      tokens.add(temp);
+    }
+  }
+
   Widget mainColumn() {
     return Column(
       children: <Widget>[
@@ -35,10 +54,8 @@ class _PortfolioState extends State<Portfolio> {
                   AsyncSnapshot<Map<String, double>> snapshot) {
                 Widget data;
                 if (snapshot.hasData) {
-                  double mainTokenBalance =
-                  snapshot.data!["mainTokenBalance"]!;
-                  double nativeTokenPrice =
-                  snapshot.data!["nativeTokenPrice"]!;
+                  double mainTokenBalance = snapshot.data!["mainTokenBalance"]!;
+                  double nativeTokenPrice = snapshot.data!["nativeTokenPrice"]!;
 
                   data = Helper().mainBalance(getWidth(context),
                       (nativeTokenPrice), 9.99, mainTokenBalance);
@@ -55,16 +72,15 @@ class _PortfolioState extends State<Portfolio> {
           padding: EdgeInsets.only(top: 40),
         ),
         FutureBuilder<double>(
-          future: backend.Web3().getTokenPrice(
-              "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", 12),
-          builder:
-              (BuildContext context, AsyncSnapshot<double> snapshot) {
+          future: backend.Web3()
+              .getTokenPrice("0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", 12),
+          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
             Widget data;
             if (snapshot.hasData) {
               double tokenPrice = snapshot.data!;
               data = Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 25, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
                 width: getWidth(context),
                 child: Helper().balanceCards(
                     getWidth(context), 1, 9, snapshot.data!, 8, "UNI"),
@@ -154,7 +170,7 @@ class _PortfolioState extends State<Portfolio> {
                 label: 'Send',
                 onTap: () {
                   Navigator.pushNamed(context, 'send');
-      
+
                   setState(() {
                     dialOpen.value = false;
                   });
@@ -253,9 +269,7 @@ class _PortfolioState extends State<Portfolio> {
         ),
         body: LiquidPullToRefresh(
           onRefresh: _onRefresh,
-          child: SafeArea(
-            child: mainColumn()
-          ),
+          child: SafeArea(child: mainColumn()),
         ),
       ),
     );
