@@ -39,3 +39,15 @@ class Network extends HiveObject {
       this.networkName,
       this.chainID);
 }
+
+@HiveType(typeId: 1)
+class Token extends HiveObject {
+  @HiveField(0)
+  final String symbol;
+  @HiveField(1)
+  final String address;
+  @HiveField(2)
+  final int decimals;
+
+  Token(this.symbol, this.address, this.decimals);
+}

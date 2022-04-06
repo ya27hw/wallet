@@ -114,10 +114,16 @@ class _SendState extends State<Send> {
 
   Widget nextButton() {
     return ElevatedButton(
-      child: const Text("Next"),
+      child: activeStep == upperBound - 1
+          ? const Text(
+              'Send',
+            )
+          : const Text(
+              'Next',
+            ),
       style: ElevatedButton.styleFrom(
         textStyle: const TextStyle(fontSize: 17),
-        fixedSize: Size(100, 60),
+        fixedSize: Size(140, 60),
         onPrimary: Colors.black,
         primary: const Color(0xFF41CD7D),
         onSurface: Colors.grey,
@@ -148,7 +154,7 @@ class _SendState extends State<Send> {
     return ElevatedButton(
       child: const Text("Previous"),
       style: ElevatedButton.styleFrom(
-        fixedSize: Size(100, 60),
+        fixedSize: Size(140, 60),
         textStyle: const TextStyle(fontSize: 17),
         //padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         onPrimary: Colors.black,
@@ -157,14 +163,16 @@ class _SendState extends State<Send> {
         elevation: 5,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
       ),
-      onPressed: () async {
+      onPressed: activeStep > 0
+          ?
+       () async {
         // pop screen
         if (activeStep > 0) {
           setState(() {
             activeStep--;
           });
         }
-      },
+      } : null,
     );
   }
 

@@ -4,9 +4,8 @@ import 'package:eth_wallet/util/library.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:eth_wallet/backend/library.dart' as backend;
-import 'package:share_plus/share_plus.dart';
-import 'package:flutter/services.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class Portfolio extends StatefulWidget {
   const Portfolio({Key? key}) : super(key: key);
@@ -16,6 +15,86 @@ class Portfolio extends StatefulWidget {
 }
 
 class _PortfolioState extends State<Portfolio> {
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  Future<void> _onRefresh() async {
+    // monitor network fetch
+    return await Future.delayed(const Duration(milliseconds: 2000));
+  }
+
+  Widget mainColumn() {
+    return Column(
+      children: <Widget>[
+        // Main Balance Card (MBC)
+        Padding(
+            padding: const EdgeInsets.only(top: 35),
+            child: FutureBuilder<Map<String, double>>(
+              future: backend.Web3().mainBalanceCard(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<Map<String, double>> snapshot) {
+                Widget data;
+                if (snapshot.hasData) {
+                  double mainTokenBalance =
+                  snapshot.data!["mainTokenBalance"]!;
+                  double nativeTokenPrice =
+                  snapshot.data!["nativeTokenPrice"]!;
+
+                  data = Helper().mainBalance(getWidth(context),
+                      (nativeTokenPrice), 9.99, mainTokenBalance);
+                } else if (snapshot.hasError) {
+                  data = const Text("Error");
+                } else {
+                  data = const Text('Awaiting result...');
+                }
+                return data;
+              },
+            )),
+        // Extra space between tokens and MBC
+        const Padding(
+          padding: EdgeInsets.only(top: 40),
+        ),
+        FutureBuilder<double>(
+          future: backend.Web3().getTokenPrice(
+              "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", 12),
+          builder:
+              (BuildContext context, AsyncSnapshot<double> snapshot) {
+            Widget data;
+            if (snapshot.hasData) {
+              double tokenPrice = snapshot.data!;
+              data = Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 25, vertical: 5),
+                width: getWidth(context),
+                child: Helper().balanceCards(
+                    getWidth(context), 1, 9, snapshot.data!, 8, "UNI"),
+              );
+            } else if (snapshot.hasError) {
+              data = const Text("Error");
+            } else {
+              data = const Text('Awaiting result...');
+            }
+            return data;
+          },
+        ),
+
+        // Expanded(
+        //     child: ListView.builder(
+        //         shrinkWrap: true,
+        //         itemCount: 6,
+        //         itemBuilder: (context, p) {
+        //           return Container(
+        //             padding: const EdgeInsets.symmetric(
+        //                 horizontal: 25, vertical: 5),
+        //             width: getWidth(context),
+        //             child: Helper()
+        //                 .balanceCards(getWidth(context), 0, 0, 0, 0),
+        //           );
+        //         })),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ValueNotifier<bool> dialOpen = ValueNotifier(false);
@@ -75,7 +154,7 @@ class _PortfolioState extends State<Portfolio> {
                 label: 'Send',
                 onTap: () {
                   Navigator.pushNamed(context, 'send');
-
+      
                   setState(() {
                     dialOpen.value = false;
                   });
@@ -172,52 +251,10 @@ class _PortfolioState extends State<Portfolio> {
             ],
           ),
         ),
-        body: SafeArea(
-          child: Column(
-            children: <Widget>[
-              // Main Balance Card (MBC)
-              Padding(
-                  padding: const EdgeInsets.only(top: 35),
-                  child: FutureBuilder<Map<String, double>>(
-                    future: backend.Web3().mainBalanceCard(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<Map<String, double>> snapshot) {
-                      Widget data;
-                      if (snapshot.hasData) {
-                        double mainTokenBalance =
-                            snapshot.data!["mainTokenBalance"]!;
-                        double nativeTokenPrice =
-                            snapshot.data!["nativeTokenPrice"]!;
-
-                        data = Helper().mainBalance(getWidth(context),
-                            (nativeTokenPrice), 9.99, mainTokenBalance);
-                      } else if (snapshot.hasError) {
-                        data = const Text("Error");
-                      } else {
-                        data = const Text('Awaiting result...');
-                      }
-                      return data;
-                    },
-                  )),
-              // Extra space between tokens and MBC
-              const Padding(
-                padding: EdgeInsets.only(top: 40),
-              ),
-
-              Expanded(
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: 1,
-                      itemBuilder: (context, p) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 25, vertical: 5),
-                          width: getWidth(context),
-                          child: Helper()
-                              .balanceCards(getWidth(context), 0, 0, 0, 0),
-                        );
-                      })),
-            ],
+        body: LiquidPullToRefresh(
+          onRefresh: _onRefresh,
+          child: SafeArea(
+            child: mainColumn()
           ),
         ),
       ),

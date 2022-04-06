@@ -127,7 +127,7 @@ class Helper {
 
   // this is used to display the card which contains a tokens balance
   Widget balanceCards(double w, double balance, double currencyMarketPrice,
-      double balanceFiat, double change) {
+      double balanceFiat, double change, String tokenSymbol) {
     return Container(
       foregroundDecoration: const RotatedCornerDecoration(
         color: Colors.redAccent,
@@ -152,7 +152,7 @@ class Helper {
                 LineIcons.ethereum,
                 size: 40,
               ),
-              title: Text('$balance ETH'),
+              title: Text('$balance $tokenSymbol'),
               subtitle: Text('\$$balanceFiat'),
             ),
           ],

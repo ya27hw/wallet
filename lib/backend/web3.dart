@@ -7,8 +7,10 @@ import 'dart:math';
 import 'package:hdkey/hdkey.dart';
 import 'package:bip39/bip39.dart' as bip39;
 
+import '../util/library.dart';
+
 var myWallet;
-Box myBox = Hive.box("myBox");
+Box _myBox = Hive.box("myBox");
 
 class Web3 {
   EtherUnit stringToUnit(String unit) {
@@ -31,6 +33,8 @@ class Web3 {
         return EtherUnit.ether;
     }
   }
+
+  String get defaultNetwork => _myBox.get("defaultNetwork");
 
   String returnAddress() {
     return myWallet.privateKey.address.hex;
@@ -109,7 +113,7 @@ class Web3 {
   }
 
   Future<double> _getMainTokenBalance() async {
-    var apiUrl = myBox.get(myBox.get("defaultNetwork")).rpcURL;
+    var apiUrl = _myBox.get(_myBox.get("defaultNetwork")).rpcURL;
     var httpClient = Client();
     var ethClient = Web3Client(apiUrl, httpClient);
     EtherAmount balance =
@@ -120,17 +124,26 @@ class Web3 {
   }
 
   Web3Client _getClient() {
-    var apiUrl = myBox.get(myBox.get("defaultNetwork")).rpcURL;
+    var apiUrl = _myBox.get(_myBox.get("defaultNetwork")).rpcURL;
     var httpClient = Client();
     return Web3Client(apiUrl, httpClient);
   }
 
   DeployedContract _getTokenContract(String contractAddress) {
-    String abiCode = myBox.get("tokenABI");
+    String abiCode = _myBox.get("tokenABI");
     EthereumAddress contractAddressObj =
         EthereumAddress.fromHex(contractAddress);
     return DeployedContract(
         ContractAbi.fromJson(abiCode, "tokenABI"), contractAddressObj);
+  }
+
+  DeployedContract _getSwapContract() {
+    String abiCode = _myBox.get("swapABI");
+    utils.Network network = _myBox.get(_myBox.get("defaultNetwork"));
+    EthereumAddress swapRouterContract =
+        EthereumAddress.fromHex(network.swapRouterAddress);
+    return DeployedContract(
+        ContractAbi.fromJson(abiCode, "swapABI"), swapRouterContract);
   }
 
   Future<int> _getDecimal(String contractAddress) async {
@@ -173,13 +186,48 @@ class Web3 {
     return {"decimals": decimals, "symbol": symbol};
   }
 
-  Future<double> getTokenPrice(String tokenAddress) async {
+  Future<double> getTokenPrice(String tokenAddress, int decimals,
+      [DeployedContract? tokenContract, DeployedContract? swapContract]) async {
     // TODO get token price
-    return 0;
+    final client = _getClient();
+    Network network = _myBox.get(_myBox.get("defaultNetwork"));
+    swapContract = swapContract ?? _getSwapContract();
+
+    final getAmountsOutFunction = swapContract.function("getAmountsOut");
+
+    final oneETH = EtherAmount.fromUnitAndValue(EtherUnit.ether, 1);
+
+    try {
+      final balance = await client.call(
+          contract: swapContract,
+          function: getAmountsOutFunction,
+          params: [
+            oneETH.getInWei,
+            [
+              EthereumAddress.fromHex(tokenAddress),
+              EthereumAddress.fromHex(network.stableCoinAddress)
+            ]
+          ]);
+      final amount = EtherAmount.inWei(balance.first[1]);
+      print(balance);
+      final price = amount.getValueInUnit(stringToUnit(network.unit));
+      return price;
+    } catch (e) {
+      print(e);
+      return -1;
+    }
+  }
+
+  Future<void> getTokenPricesBatch(List<Token> tokens) async {
+    // TODO get token prices
+    for (Token token in tokens) {
+      double tokenPrice = await getTokenPrice(token.address, token.decimals);
+      
+    }
   }
 
   Future<double> _getNativeTokenPrice() async {
-    utils.Network defaultNetwork = myBox.get(myBox.get("defaultNetwork"));
+    utils.Network defaultNetwork = _myBox.get(_myBox.get("defaultNetwork"));
     final Web3Client client = _getClient();
 
     final EthereumAddress stableCoinAddress =
@@ -190,7 +238,7 @@ class Web3 {
         EthereumAddress.fromHex(defaultNetwork.swapRouterAddress);
 
     try {
-      String swapABI = myBox.get("swapABI");
+      String swapABI = _myBox.get("swapABI");
       final swapContract = DeployedContract(
           ContractAbi.fromJson(swapABI, "UniswapV2Router02"), swapRouter);
       final getAmountsOutFunction = swapContract.function('getAmountsOut');
@@ -232,7 +280,7 @@ class Web3 {
     // TODO : Send a transaction through the network.
 
     utils.Network defaultNetwork =
-        myBox.get(myBox.get("defaultNetwork")) as utils.Network;
+        _myBox.get(_myBox.get("defaultNetwork")) as utils.Network;
     print(defaultNetwork.chainID);
     // Convert value in ether to value in wei
     BigInt valueWei = BigInt.from(value * pow(10, 18));
@@ -245,5 +293,7 @@ class Web3 {
 
     await ethClient.sendTransaction(myWallet.privateKey, transaction,
         chainId: defaultNetwork.chainID);
+
+    // TODO: Record transaction in activity later
   }
 }

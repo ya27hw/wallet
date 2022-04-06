@@ -9,10 +9,21 @@ Future<void> main() async {
   // ---------- Hive ----------
   await Hive.initFlutter();
   Hive.registerAdapter(NetworkAdapter());
-  await Hive.openBox('myBox');
+  Hive.registerAdapter(TokenAdapter());
+
+  final myBox = await Hive.openBox('myBox');
+  await Hive.openBox("tokenBox");
 
   // ---------- Load Networks to DB ----------
-  await initDB();
+  
+  // Check if myBox is empty
+  if (myBox.isEmpty) {
+    // Load Networks to DB
+    await initDB();
+  }
+
+  // TESTING PURPOSES : Set defaultNetwork
+  myBox.put("defaultNetwork", "erc20");
 
   // ---------- Initial route ----------
   bool exists = await checkIfFileExists("wallet.json");

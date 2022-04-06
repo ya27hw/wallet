@@ -39,13 +39,13 @@ Future<bool> checkIfFileExists(String fileName) async {
   return file.exists();
 } 
 
-Future<File> get localFile async {
+Future<File> localFile(String fileName) async {
   final path = await localPath;
-  return File('$path/wallet.json');
+  return File('$path/$fileName.json');
 }
 
 Future<File> writeWallet(String wallet) async {
-  final file = await localFile;
+  final file = await localFile("wallet");
 
   // Write the file
   return file.writeAsString(wallet);
@@ -53,7 +53,7 @@ Future<File> writeWallet(String wallet) async {
 
 Future<String> readWallet() async {
   try {
-    final file = await localFile;
+    final file = await localFile("wallet");
 
     // Read the file
     final contents = await file.readAsString();

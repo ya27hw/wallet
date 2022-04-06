@@ -1,6 +1,8 @@
 import 'package:eth_wallet/util/library.dart';
 import 'package:flutter/material.dart';
 import "package:eth_wallet/backend/library.dart" as be;
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddToken extends StatefulWidget {
   const AddToken({Key? key}) : super(key: key);
@@ -24,6 +26,8 @@ class _AddTokenState extends State<AddToken> {
 
   @override
   Widget build(BuildContext context) {
+    final tokenBox = Hive.box("tokenBox");
+    String defaultNetwork = be.Web3().defaultNetwork;
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -62,7 +66,8 @@ class _AddTokenState extends State<AddToken> {
                           await be.Web3().getSymbolDecimal(value);
                       setState(() {
                         // Set Symbol field and Decimal field to the retrieved values
-                        _decimalsController.text = decimalSymbol["decimals"].toString();
+                        _decimalsController.text =
+                            decimalSymbol["decimals"].toString();
                         _symbolController.text = decimalSymbol["symbol"];
                       });
                     }
@@ -150,9 +155,18 @@ class _AddTokenState extends State<AddToken> {
                         borderRadius: BorderRadius.circular(17)),
                   ),
                   onPressed: () async {
-                    // TODO
-                    
                     // pop screen
+                    Token tempToken = Token(
+                        _contractAddressController.text,
+                        _symbolController.text,
+                        int.parse(_decimalsController.text));
+
+                    List<Token> tokens =
+                        tokenBox.get(defaultNetwork) ?? <Token>[];
+                    tokens.add(tempToken);
+                    tokenBox.put(defaultNetwork, tokens);
+
+                    // Check if token is already in the list
                     Navigator.pop(context);
                   },
                 ),
