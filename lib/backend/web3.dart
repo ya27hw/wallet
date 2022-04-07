@@ -280,7 +280,7 @@ class Web3 {
             oneETH.getInWei,
             [nativeTokenAddress, stableCoinAddress]
           ]);
-      print(etherPrice);
+      //print(etherPrice);
       final amount = EtherAmount.inWei(etherPrice.first[1]);
       double doubleAmount =
           amount.getValueInUnit(stringToUnit(defaultNetwork.unit));

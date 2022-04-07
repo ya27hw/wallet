@@ -141,21 +141,26 @@ class Helper {
           color: secondaryDarkColor(),
           borderRadius: const BorderRadius.all(Radius.circular(10))),
       width: w - 50,
-      child: Card(
-        elevation: 5,
-        color: secondaryDarkColor(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(
-                LineIcons.ethereum,
-                size: 40,
+      child: GestureDetector(
+        onTap: () {
+          
+        },
+        child: Card(
+          elevation: 5,
+          color: secondaryDarkColor(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(
+                  LineIcons.ethereum,
+                  size: 40,
+                ),
+                title: Text('$balance $tokenSymbol'),
+                subtitle: Text('\$$balanceFiat'),
               ),
-              title: Text('$balance $tokenSymbol'),
-              subtitle: Text('\$$balanceFiat'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
