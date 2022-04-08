@@ -22,6 +22,16 @@ class TokenInfo {
   TokenInfo(this.balance, this.priceUSD, this.token);
 }
 
+class ChartSampleData {
+  ChartSampleData(this.x, this.open, this.high, this.low, this.close);
+
+  final DateTime? x;
+  final num? open;
+  final num? high;
+  final num? low;
+  final num? close;
+}
+
 @HiveType(typeId: 0)
 class Network extends HiveObject {
   @HiveField(0)

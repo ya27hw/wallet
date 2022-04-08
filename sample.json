@@ -1,0 +1,187 @@
+[
+  {
+    "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "name": "Chainlink",
+    "decimals": "18",
+    "symbol": "LINK",
+    "totalSupply": "1000000000000000000000000000",
+    "owner": "",
+    "transfersCount": 11067065,
+    "lastUpdated": 1649440002,
+    "issuancesCount": 0,
+    "holdersCount": 658398,
+    "image": "/images/chainlink.jpg",
+    "description": "The Chainlink network provides reliable tamper-proof inputs and outputs for complex smart contracts on any blockchain.",
+    "website": "https://chain.link/",
+    "twitter": "chainlink",
+    "telegram": "https://t.me/chainlinkofficial",
+    "reddit": "Chainlink",
+    "coingecko": "chainlink",
+    "ethTransfersCount": 22,
+    "price": {
+      "rate": 15.545715083563802,
+      "diff": -0.06,
+      "diff7d": -10.03,
+      "ts": 1649439840,
+      "marketCapUsd": 7259997398.150164,
+      "availableSupply": 467009549.5205637,
+      "volume24h": 373115984.1612702,
+      "diff30d": 12.973007699027178,
+      "volDiff1": -27.21756198711803,
+      "volDiff7": -14.249519393373006,
+      "volDiff30": -13.986027998039546,
+      "currency": "USD"
+    },
+    "publicTags": ["DeFi", "Oracle", "Polkadot"],
+    "countOps": 11067065
+  },
+  {
+    "history": {
+      "current": {
+        "rate": 190.99775704537186,
+        "diff": -6.4,
+        "diff7d": -25.54,
+        "ts": 1649442840,
+        "marketCapUsd": 2612700042.4803934,
+        "availableSupply": 13679218.45207712,
+        "volume24h": 316696137.7281925,
+        "diff30d": 50.72583198040482,
+        "volDiff1": -24.47171451077159,
+        "volDiff7": -36.92714480031093,
+        "volDiff30": 122.8913418996101,
+        "symbol": "AAVE"
+      },
+      "countTxs": [
+        {
+          "_id": { "year": 2022, "month": 4, "day": 8 },
+          "ts": 1649376013,
+          "cnt": 1128
+        },
+        {
+          "_id": { "year": 2022, "month": 4, "day": 7 },
+          "ts": 1649289681,
+          "cnt": 1427
+        },
+        {
+          "_id": { "year": 2022, "month": 4, "day": 6 },
+          "ts": 1649203295,
+          "cnt": 1483
+        },
+        {
+          "_id": { "year": 2022, "month": 4, "day": 5 },
+          "ts": 1649116857,
+          "cnt": 955
+        },
+        {
+          "_id": { "year": 2022, "month": 4, "day": 4 },
+          "ts": 1649030458,
+          "cnt": 1283
+        },
+        {
+          "_id": { "year": 2022, "month": 4, "day": 3 },
+          "ts": 1648944020,
+          "cnt": 1827
+        },
+        {
+          "_id": { "year": 2022, "month": 4, "day": 2 },
+          "ts": 1648857609,
+          "cnt": 2019
+        }
+      ],
+      "prices": [
+        {
+          "ts": 1648857600,
+          "date": "2022-04-02",
+          "hour": 0,
+          "open": 245.36595019729373,
+          "close": 237.15321397576142,
+          "high": 254.82212028972808,
+          "low": 236.71304788719615,
+          "volume": 2645509.8630658095,
+          "volumeConverted": 647204993.74,
+          "cap": 3243069227.4,
+          "average": 244.64282018966722
+        },
+        {
+          "ts": 1648944000,
+          "date": "2022-04-03",
+          "hour": 0,
+          "open": 237.1294043075794,
+          "close": 242.8079077979686,
+          "high": 251.79840427564892,
+          "low": 232.0311918094227,
+          "volume": 1978803.5451475293,
+          "volumeConverted": 479539040.93,
+          "cap": 3320655499.04,
+          "average": 242.33787235015694
+        },
+        {
+          "ts": 1649030400,
+          "date": "2022-04-04",
+          "hour": 0,
+          "open": 242.7499782877634,
+          "close": 238.39431518212464,
+          "high": 242.86893086841758,
+          "low": 226.71816865121428,
+          "volume": 1536250.434652624,
+          "volumeConverted": 365211448.41,
+          "cap": 3260304470.49,
+          "average": 237.72910989775013
+        },
+        {
+          "ts": 1649116800,
+          "date": "2022-04-05",
+          "hour": 0,
+          "open": 238.34009306459427,
+          "close": 221.10825664182786,
+          "high": 238.34009306459427,
+          "low": 220.98569935117294,
+          "volume": 1063050.2832961825,
+          "volumeConverted": 247681993.18,
+          "cap": 3023906194.87,
+          "average": 232.99179452924514
+        },
+        {
+          "ts": 1649203200,
+          "date": "2022-04-06",
+          "hour": 0,
+          "open": 221.0664081814383,
+          "close": 191.45553537247747,
+          "high": 221.13170325042236,
+          "low": 191.37158271227332,
+          "volume": 2145335.8599047638,
+          "volumeConverted": 451038083.08,
+          "cap": 2618471044.9,
+          "average": 210.2412454430434
+        },
+        {
+          "ts": 1649289600,
+          "date": "2022-04-07",
+          "hour": 0,
+          "open": 191.4736827748327,
+          "close": 202.59207305265875,
+          "high": 206.77837203624398,
+          "low": 191.4736827748327,
+          "volume": 2041258.6706709096,
+          "volumeConverted": 408731295.77,
+          "cap": 2771196519.4,
+          "average": 200.23493427986784
+        },
+        {
+          "ts": 1649376000,
+          "date": "2022-04-08",
+          "hour": 0,
+          "open": 202.9453921382332,
+          "close": 194.05336520359015,
+          "high": 204.23685322931016,
+          "low": 188.501580708488,
+          "volume": 1621505.4417875407,
+          "volumeConverted": 320065935.3643329,
+          "cap": 2654498330.301773,
+          "average": 197.38813519582988,
+          "tmp": 1
+        }
+      ]
+    }
+  }
+]

@@ -22,6 +22,55 @@ class _PortfolioState extends State<Portfolio> {
     super.initState();
   }
 
+  Widget tokenDividerLine() {
+    return Row(children: <Widget>[
+      Expanded(
+        child: Container(
+            margin: const EdgeInsets.only(left: 10.0, right: 15.0),
+            child: Divider(
+              color: Colors.grey[300],
+              height: 50,
+            )),
+      ),
+
+      const Text("Assets"),
+
+      Expanded(
+        child: Container(
+            margin: const EdgeInsets.only(left: 15.0, right: 10.0),
+            child: Divider(
+              color: Colors.grey[300],
+              height: 50,
+            )),
+      ),
+    ]);
+  }
+
+  Widget addTokenText() {
+    return Column(
+      children: [
+        Text("Don't see your token?"
+          , style: TextStyle(
+              color: Colors.grey[300],
+              fontStyle: FontStyle.italic
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, 'addToken');
+
+          },
+          child: const Text(
+            "Tap here",
+            style: TextStyle(
+              color: Colors.blue
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   Future<List<Widget>> getData() async {
     // Retrieve Main Token Balance
     // Retrieve other Tokens Balance
@@ -32,19 +81,23 @@ class _PortfolioState extends State<Portfolio> {
     double nativeTokenPrice = mainBalance["nativeTokenPrice"]!;
 
     final mainBalanceCard = Helper()
-        .mainBalance(getWidth(context), nativeTokenPrice, 0, mainTokenBalance);
+        .mainBalance(getWidth(context), nativeTokenPrice, 0, mainTokenBalance, "ETH");
 
     final tokenBox = Hive.box("tokenBox");
     String defNetwork = backend.Web3().defaultNetwork;
     // Get all tokens of defaultNetwork
-    final tokens = tokenBox.get(defNetwork);
+    final tokens = tokenBox.get(defNetwork) ?? [];
     List<Token> allTokens = List.castFrom(tokens);
     // Iterate through keys of allTokens
 
     if (allTokens.isEmpty) {
       return <Widget>[
         mainBalanceCard,
-        const Padding(padding: EdgeInsets.only(top: 50)),
+        const Padding(padding: EdgeInsets.only(top: 30)),
+        tokenDividerLine(),
+        const Padding(padding: EdgeInsets.only(top: 10)),
+        addTokenText(),
+
       ];
     }
 
@@ -60,20 +113,26 @@ class _PortfolioState extends State<Portfolio> {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
             width: getWidth(context),
-            child: Helper().balanceCards(
-                getWidth(context),
-                temp.balance,
-                temp.priceUSD,
-                temp.balance * temp.priceUSD,
-                0,
-                tempToken.symbol),
+            child: InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, 'tokenInfo', arguments: temp);
+              },
+              child: Helper().balanceCards(
+                  getWidth(context),
+                  temp.balance,
+                  temp.priceUSD,
+                  temp.balance * temp.priceUSD,
+                  0,
+                  tempToken.symbol),
+            ),
           );
         });
-
     return [
       mainBalanceCard,
-      const Padding(padding: EdgeInsets.only(top: 50)),
-      tokenListViewBuilder
+      const Padding(padding: EdgeInsets.only(top: 30)),
+      tokenDividerLine(),
+      tokenListViewBuilder,
+      const Padding(padding: EdgeInsets.only(top: 30)),
     ];
   }
 

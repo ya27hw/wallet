@@ -27,7 +27,7 @@ class _VerifyState extends State<Verify> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: primaryDarkColor(),
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         height: double.infinity,
         child: Column(
@@ -84,8 +84,6 @@ class _VerifyState extends State<Verify> {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           backgroundColor: secondaryDarkColor(),
-                          
-                          
                           title: const Text("Error"),
                           content: const Text("Incorrect password"),
                           actions: [

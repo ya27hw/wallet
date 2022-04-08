@@ -163,8 +163,9 @@ class _AddTokenState extends State<AddToken> {
                     print("Added Token: " + tempToken.symbol);
                     print("Added Token: " + tempToken.address);
                     print("Added Token: " + tempToken.decimals.toString());
+                    final tokenList = tokenBox.get(defaultNetwork) ?? [];
                     List<Token> tokens =
-                        List.castFrom(tokenBox.get(defaultNetwork));
+                        List.castFrom(tokenList);
 
                     // Remove token if it already exists
                     tokens.removeWhere(

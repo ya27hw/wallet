@@ -13,7 +13,7 @@ Future<void> main() async {
 
   final myBox = await Hive.openBox('myBox');
   final tokenBox = await Hive.openBox("tokenBox");
-  // tokenBox.clear();
+   tokenBox.clear();
 
   // ---------- Load Networks to DB ----------
   
@@ -24,7 +24,7 @@ Future<void> main() async {
   }
 
   // TESTING PURPOSES : Set defaultNetwork
-  myBox.put("defaultNetwork", "ropsten");
+  myBox.put("defaultNetwork", "erc20");
 
   // ---------- Initial route ----------
   bool exists = await checkIfFileExists("wallet.json");
