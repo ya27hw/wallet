@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:eth_wallet/util/library.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:im_stepper/stepper.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -21,6 +22,14 @@ class _SendState extends State<Send> {
   Barcode? result;
   QRViewController? controller;
 
+  String dropDownValue = "";
+  String operationMode = "";
+  int decimals = 0;
+  String symbol = "";
+
+  final tokenBox = Hive.box("tokenBox");
+  final defNetwork = Web3().defaultNetwork;
+
   int activeStep = 0;
   int upperBound = 3;
 
@@ -35,6 +44,18 @@ class _SendState extends State<Send> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    final t = tokenBox.get(defNetwork);
+    if (t != null) {
+      dropDownValue = t[0].address;
+      decimals = t[0].decimals;
+      symbol = t[0].symbol;
+    }
+    print(dropDownValue);
+  }
+
+  @override
   void dispose() {
     _receiveAddressController.dispose();
     _valueController.dispose();
@@ -44,6 +65,7 @@ class _SendState extends State<Send> {
   Widget getBody() {
     switch (activeStep) {
       case 0:
+        // Select address here...
         return Padding(
           padding: EdgeInsets.only(
               top: getHeight(context) * 0.08, left: 35, right: 35),
@@ -74,27 +96,87 @@ class _SendState extends State<Send> {
         );
 
       case 1:
+        var tokenList = tokenBox.get(defNetwork) ?? <Token>[];
+        List<Token> castedTokenList = List.castFrom(tokenList);
+
+        // Select token and value here...
         return Padding(
           padding: EdgeInsets.only(
               top: getHeight(context) * 0.08, left: 35, right: 35),
-          child: Container(
-            decoration: BoxDecoration(
-                color: const Color(0xFF32385F),
-                borderRadius: BorderRadius.circular(17)),
-            child: TextField(
-              keyboardType: TextInputType.number,
-              controller: _valueController,
-              maxLines: 1,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.all(10),
-                border: InputBorder.none,
-                hintText: 'Input amount to transfer...',
+          child: Column(
+            children: [
+              ListTile(
+                title: const Text("ETH"),
+                leading: Radio(
+                  value: 'ETH',
+                  groupValue: operationMode,
+                  onChanged: (value) {
+                    setState(() {
+                      operationMode = value.toString();
+                    });
+                  },
+                ),
               ),
-            ),
+              ListTile(
+                title: const Text("Other Tokens"),
+                leading: Radio(
+                  value: 'OT',
+                  groupValue: operationMode,
+                  onChanged: (value) {
+                    setState(() {
+                      operationMode = value.toString();
+                    });
+                  },
+                ),
+              ),
+              operationMode == "ETH"
+                  ? Container()
+                  : DropdownButton(
+                      underline: Container(
+                        decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.zero),
+                      ),
+                      dropdownColor: secondaryDarkColor(),
+                      items: castedTokenList
+                          .map<DropdownMenuItem<String>>((Token itemOne) {
+                        return DropdownMenuItem<String>(
+                            value: itemOne.address,
+                            child: Text(itemOne.symbol));
+                      }).toList(),
+                      value: dropDownValue.isEmpty
+                          ? castedTokenList[0].address
+                          : dropDownValue,
+                      onChanged: (value) {
+                        setState(() {
+                          dropDownValue = value.toString();
+                          Token temp = castedTokenList.firstWhere(
+                              (Token item) => item.address == value);
+                          decimals = temp.decimals;
+                          symbol = temp.symbol;
+                        });
+                      },
+                    ),
+              Container(
+                decoration: BoxDecoration(
+                    color: const Color(0xFF32385F),
+                    borderRadius: BorderRadius.circular(17)),
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  controller: _valueController,
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.all(10),
+                    border: InputBorder.none,
+                    hintText: 'Input amount to transfer...',
+                  ),
+                ),
+              ),
+            ],
           ),
         );
 
       case 2:
+        symbol = operationMode == "ETH" ? "ETH" : symbol;
         return Padding(
           padding: EdgeInsets.only(top: getHeight(context) * 0.09),
           child: Column(children: <Widget>[
@@ -121,7 +203,7 @@ class _SendState extends State<Send> {
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
-              child: Text("Amount: ${_valueController.text} COINSYMBOL",
+              child: Text("Amount: ${_valueController.text} $symbol",
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                       fontSize: 15,
@@ -161,10 +243,16 @@ class _SendState extends State<Send> {
           });
         } else if (activeStep == upperBound - 1) {
           // send transaction
-          await Web3().sendTokenTransaction(
-            _receiveAddressController.text,
-            double.parse(_valueController.text),
-          );
+          if (operationMode == "ETH") {
+            await Web3().sendTokenTransaction(
+              _receiveAddressController.text,
+              double.parse(_valueController.text),
+            );
+          } else {
+            await Web3().sendTokenTransaction(_receiveAddressController.text,
+                double.parse(_valueController.text), dropDownValue, decimals);
+          }
+
           // pop screen
           Navigator.pop(context);
         }
