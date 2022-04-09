@@ -4,10 +4,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:rotated_corner_decoration/rotated_corner_decoration.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/foundation.dart';
 import "dart:core";
-
-import 'package:syncfusion_flutter_core/core.dart';
 
 class Helper {
   Widget Button(double width, String msg,
