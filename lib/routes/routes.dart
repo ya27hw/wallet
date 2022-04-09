@@ -13,6 +13,7 @@ const String activity = "activity";
 const String addToken = "addToken";
 const String send = "send";
 const String tokenInfo = "tokenInfo";
+const String settingsPage = "settings";
 
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
@@ -51,6 +52,9 @@ Route<dynamic> controller(RouteSettings settings) {
           builder: (context) => home.TokenInfoPage(
                 tokenInfo: settings.arguments as TokenInfo,
               ));
+
+    case settingsPage:
+      return MaterialPageRoute(builder: (context) => const home.Settings());
 
     default:
       throw ("Error no route");

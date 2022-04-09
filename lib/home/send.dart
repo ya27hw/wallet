@@ -41,17 +41,6 @@ class _SendState extends State<Send> {
     super.dispose();
   }
 
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        result = scanData;
-      });
-      print(result?.format.name);
-      print(result?.format.formatName);
-    });
-  }
-
   Widget getBody() {
     switch (activeStep) {
       case 0:
@@ -106,9 +95,43 @@ class _SendState extends State<Send> {
         );
 
       case 2:
-        return Text("not implemented yet 3");
+        return Padding(
+          padding: EdgeInsets.only(top: getHeight(context) * 0.09),
+          child: Column(children: <Widget>[
+            const SizedBox(
+              width: double.infinity,
+              child: Text("Transaction details:",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      textBaseline: TextBaseline.alphabetic,
+                      color: Colors.white)),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: Text("To: ${_receiveAddressController.text}",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 15,
+                      textBaseline: TextBaseline.alphabetic,
+                      color: Colors.white)),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: Text("Amount: ${_valueController.text} COINSYMBOL",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 15,
+                      textBaseline: TextBaseline.alphabetic,
+                      color: Colors.white)),
+            ),
+          ]),
+        );
       default:
-        return Text("Error");
+        return const Text("Error");
     }
   }
 
@@ -123,7 +146,7 @@ class _SendState extends State<Send> {
             ),
       style: ElevatedButton.styleFrom(
         textStyle: const TextStyle(fontSize: 17),
-        fixedSize: Size(140, 60),
+        fixedSize: const Size(140, 60),
         onPrimary: Colors.black,
         primary: const Color(0xFF41CD7D),
         onSurface: Colors.grey,
@@ -141,7 +164,6 @@ class _SendState extends State<Send> {
           await Web3().sendTokenTransaction(
             _receiveAddressController.text,
             double.parse(_valueController.text),
-            true,
           );
           // pop screen
           Navigator.pop(context);
@@ -164,15 +186,15 @@ class _SendState extends State<Send> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
       ),
       onPressed: activeStep > 0
-          ?
-       () async {
-        // pop screen
-        if (activeStep > 0) {
-          setState(() {
-            activeStep--;
-          });
-        }
-      } : null,
+          ? () async {
+              // pop screen
+              if (activeStep > 0) {
+                setState(() {
+                  activeStep--;
+                });
+              }
+            }
+          : null,
     );
   }
 

@@ -1,5 +1,4 @@
 import 'package:eth_wallet/backend/ethplorer.dart';
-import 'package:eth_wallet/home/library.dart';
 import 'package:eth_wallet/util/library.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -52,6 +51,9 @@ class _TokenInfoPageState extends State<TokenInfoPage> {
                       data.containsKey("description")
                           ? data["description"]
                           : null,
+                      data.containsKey("website") ? data["website"] : null,
+                      data.containsKey("reddit") ? data["reddit"] : null,
+                      data.containsKey("twitter") ? data["twitter"] : null,
                     );
                   } else if (snapshot.hasError) {
                     return Text(snapshot.error.toString());
@@ -116,7 +118,6 @@ class _TokenInfoPageState extends State<TokenInfoPage> {
                   }
                 }),
             const Padding(padding: EdgeInsets.only(top: 20)),
-            Helper().snsButtonRow()
           ],
         ),
       ),

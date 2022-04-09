@@ -78,6 +78,7 @@ class _PortfolioState extends State<Portfolio> {
         getWidth(context), nativeTokenPrice, 0, mainTokenBalance, "ETH");
 
     final tokenBox = Hive.box("tokenBox");
+    final defaultNetwork = backend.Web3().defaultNetwork;
     String defNetwork = backend.Web3().defaultNetwork;
     // Get all tokens of defaultNetwork
     final tokens = tokenBox.get(defNetwork) ?? [];
@@ -103,9 +104,11 @@ class _PortfolioState extends State<Portfolio> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
         width: getWidth(context),
         child: InkWell(
-          onTap: () {
-            Navigator.pushNamed(context, 'tokenInfo', arguments: temp);
-          },
+          onTap: defNetwork != "erc20"
+              ? null
+              : () {
+                  Navigator.pushNamed(context, 'tokenInfo', arguments: temp);
+                },
           child: Helper().balanceCards(getWidth(context), temp.balance,
               temp.priceUSD, temp.balance * temp.priceUSD, 0, tempToken.symbol),
         ),
@@ -252,6 +255,24 @@ class _PortfolioState extends State<Portfolio> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Wrap(
+                  spacing: 20,
+                  children: const [
+                    Icon(
+                      LineIcons.cog,
+                      size: 20,
+                    ),
+                    Text(
+                      "Settings",
+                      style: TextStyle(fontSize: 16),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, 'settings');
                 },
               ),
               ListTile(

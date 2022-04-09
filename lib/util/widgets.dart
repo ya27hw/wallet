@@ -6,6 +6,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 import "dart:core";
 
+import 'package:url_launcher/url_launcher.dart';
+
 class Helper {
   Widget Button(double width, String msg,
       [BuildContext? ctx, String? routeName]) {
@@ -51,7 +53,7 @@ class Helper {
 
   Widget tokenDescriptionCard(double w, double balance, double change,
       double tokenBalance, String tokenName, String symbol, String imageUrl,
-      [String? description]) {
+      [String? description, String? website, String? reddit, String? twitter]) {
     BalanceIndicator mbi = BalanceIndicator();
 
     if (change > 0) {
@@ -125,53 +127,66 @@ class Helper {
                     ),
                   )
                 : Container(),
+            const Padding(padding: EdgeInsets.only(top: 20)),
+            snsButtonRow(website, reddit, twitter),
           ],
         ),
       ),
     );
   }
 
-  Widget snsButtonRow() {
+  Widget snsButtonRow([String? website, String? twitter, String? reddit]) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        RawMaterialButton(
-          onPressed: () {
-            // Open link in browser
-            String url = "https://twitter.com/ethplorer";
-            
-          },
-          elevation: 2.0,
-          fillColor: secondaryDarkColor(),
-          child: const Icon(
-            LineIcons.globe,
-            size: 25.0,
-          ),
-          padding: const EdgeInsets.all(15),
-          shape: const CircleBorder(),
-        ),
-        RawMaterialButton(
-          onPressed: () {},
-          elevation: 2.0,
-          fillColor: secondaryDarkColor(),
-          child: const Icon(
-            LineIcons.redditAlien,
-            size: 25.0,
-          ),
-          padding: const EdgeInsets.all(15),
-          shape: const CircleBorder(),
-        ),
-        RawMaterialButton(
-          onPressed: () {},
-          elevation: 2.0,
-          fillColor: secondaryDarkColor(),
-          child: const Icon(
-            LineIcons.twitter,
-            size: 25.0,
-          ),
-          padding: const EdgeInsets.all(15),
-          shape: const CircleBorder(),
-        ),
+        website != null
+            ? RawMaterialButton(
+                onPressed: () {
+                  // Open link in browser
+                  launch(website);
+                },
+                elevation: 2.0,
+                fillColor: primaryDarkColor(),
+                child: const Icon(
+                  LineIcons.globe,
+                  size: 25.0,
+                ),
+                padding: const EdgeInsets.all(15),
+                shape: const CircleBorder(),
+              )
+            : Container(),
+        reddit != null
+            ? RawMaterialButton(
+                onPressed: () {
+                  // Open link in browser
+                  launch("https://www.reddit.com/r/$reddit");
+                },
+                elevation: 2.0,
+                fillColor: primaryDarkColor(),
+                child: const Icon(
+                  LineIcons.redditAlien,
+                  size: 25.0,
+                ),
+                padding: const EdgeInsets.all(15),
+                shape: const CircleBorder(),
+              )
+            : Container(),
+        twitter != null
+            ? RawMaterialButton(
+                onPressed: () {
+                  // Open link in browser
+                  launch("https://twitter.com/$twitter");
+                },
+                elevation: 2.0,
+                fillColor: primaryDarkColor(),
+                child: const Icon(
+                  LineIcons.twitter,
+                  size: 25.0,
+                ),
+                padding: const EdgeInsets.all(15),
+                shape: const CircleBorder(),
+              )
+            : Container(),
       ],
     );
   }

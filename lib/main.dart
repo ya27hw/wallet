@@ -25,7 +25,7 @@ Future<void> main() async {
   }
 
   // TESTING PURPOSES : Set defaultNetwork
-  myBox.put("defaultNetwork", "erc20");
+  myBox.put("defaultNetwork", "ropsten");
 
   // ---------- Initial route ----------
   bool exists = await checkIfFileExists("wallet.json");

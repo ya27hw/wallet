@@ -1,3 +1,4 @@
+import 'package:eth_wallet/token.g.dart' as tokenG;
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import "package:eth_wallet/util/library.dart" as utils;
@@ -308,24 +309,39 @@ class Web3 {
     };
   }
 
-  Future<void> sendTokenTransaction(
-      String receivingAddress, double value, bool isNative) async {
-    // TODO : Send a transaction through the network via other tokens.
-
+  Future<void> sendTokenTransaction(String receivingAddress, double value,
+      [String? tokenContractAddress, num? decimals]) async {
     utils.Network defaultNetwork =
         _myBox.get(_myBox.get("defaultNetwork")) as utils.Network;
-    print(defaultNetwork.chainID);
-    // Convert value in ether to value in wei
-    BigInt valueWei = BigInt.from(value * pow(10, 18));
     Web3Client ethClient = _getClient();
-    var transaction = Transaction(
-      to: EthereumAddress.fromHex(receivingAddress),
-      maxGas: 21000,
-      value: EtherAmount.inWei(valueWei),
-    );
+    final gasPrice = await ethClient.getGasPrice();
 
-    await ethClient.sendTransaction(myWallet.privateKey, transaction,
-        chainId: defaultNetwork.chainID);
+    if (tokenContractAddress == null || decimals == null) {
+      // Send transaction with native token
+      // Convert value in ether to value in wei
+      BigInt valueWei = BigInt.from(value * pow(10, 18));
+      var transaction = Transaction(
+        to: EthereumAddress.fromHex(receivingAddress),
+        maxGas: 100000,
+        gasPrice: gasPrice,
+        value: EtherAmount.inWei(valueWei),
+      );
+
+      await ethClient.sendTransaction(myWallet.privateKey, transaction,
+          chainId: defaultNetwork.chainID);
+    } else {
+      final tokenContract = tokenG.Token(
+          address: EthereumAddress.fromHex(tokenContractAddress),
+          client: ethClient);
+
+      await tokenContract.transfer(EthereumAddress.fromHex(receivingAddress),
+          BigInt.from(value * pow(10, decimals)),
+          credentials: myWallet.privateKey,
+          transaction: Transaction(
+            gasPrice: gasPrice,
+            maxGas: 100000,
+          ));
+    }
 
     // TODO: Record transaction in activity later
   }
