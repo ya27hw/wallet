@@ -22,14 +22,31 @@ class TokenInfo {
   TokenInfo(this.balance, this.priceUSD, this.token);
 }
 
-class ChartSampleData {
-  ChartSampleData(this.x, this.open, this.high, this.low, this.close);
-
-  final DateTime? x;
+class TokenChartData {
+  final num? ts;
+  final String? date;
+  final num? hour;
   final num? open;
+  final num? close;
   final num? high;
   final num? low;
-  final num? close;
+  final num? volume;
+  final num? volumeConverted;
+  final num? cap;
+  final num? average;
+
+  TokenChartData(
+      {this.ts,
+      this.date,
+      this.hour,
+      this.open,
+      this.close,
+      this.high,
+      this.low,
+      this.volume,
+      this.volumeConverted,
+      this.cap,
+      this.average});
 }
 
 @HiveType(typeId: 0)

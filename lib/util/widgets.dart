@@ -1,15 +1,13 @@
-import 'dart:math';
-
-import 'package:eth_wallet/main.dart';
 import 'package:eth_wallet/util/library.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:rotated_corner_decoration/rotated_corner_decoration.dart';
-import 'package:eth_wallet/backend/library.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart';
+import "dart:core";
+
+import 'package:syncfusion_flutter_core/core.dart';
 
 class Helper {
   Widget Button(double width, String msg,
@@ -55,7 +53,8 @@ class Helper {
   }
 
   Widget tokenDescriptionCard(double w, double balance, double change,
-      double tokenBalance, String tokenName, String symbol, String imageUrl) {
+      double tokenBalance, String tokenName, String symbol, String imageUrl,
+      [String? description]) {
     BalanceIndicator mbi = BalanceIndicator();
 
     if (change > 0) {
@@ -120,16 +119,63 @@ class Helper {
                     child: Text("${mbi.symbol}$change%"),
                   )
                 ]),
-            Container(
-              padding: const EdgeInsets.only(top: 13),
-              child: Text(
-                "$tokenBalance $symbol",
-                style: const TextStyle(fontSize: 19, color: Colors.white70),
-              ),
-            )
+            description != null
+                ? Container(
+                    padding: const EdgeInsets.only(top: 13),
+                    child: Text(
+                      description,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget snsButtonRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        RawMaterialButton(
+          onPressed: () {
+            // Open link in browser
+            String url = "https://twitter.com/ethplorer";
+            
+          },
+          elevation: 2.0,
+          fillColor: secondaryDarkColor(),
+          child: const Icon(
+            LineIcons.globe,
+            size: 25.0,
+          ),
+          padding: const EdgeInsets.all(15),
+          shape: const CircleBorder(),
+        ),
+        RawMaterialButton(
+          onPressed: () {},
+          elevation: 2.0,
+          fillColor: secondaryDarkColor(),
+          child: const Icon(
+            LineIcons.redditAlien,
+            size: 25.0,
+          ),
+          padding: const EdgeInsets.all(15),
+          shape: const CircleBorder(),
+        ),
+        RawMaterialButton(
+          onPressed: () {},
+          elevation: 2.0,
+          fillColor: secondaryDarkColor(),
+          child: const Icon(
+            LineIcons.twitter,
+            size: 25.0,
+          ),
+          padding: const EdgeInsets.all(15),
+          shape: const CircleBorder(),
+        ),
+      ],
     );
   }
 
@@ -206,46 +252,50 @@ class Helper {
     ));
   }
 
-  Widget candleChart(dynamic data) {
-    var data = [
-      ChartSampleData(DateTime(2020, 01, 11), 90, 101, 44, 101),
-      ChartSampleData(DateTime(2020, 01, 12), 95, 105, 95, 106),
-      ChartSampleData(DateTime(2020, 01, 13), 100, 110, 100, 110),
-      ChartSampleData(DateTime(2020, 01, 14), 105, 115, 105, 115),
-      ChartSampleData(DateTime(2020, 01, 15), 110, 120, 110, 120),
-      ChartSampleData(DateTime(2020, 01, 16), 115, 125, 115, 125),
-      ChartSampleData(DateTime(2020, 01, 17), 120, 130, 120, 130),
-      ChartSampleData(DateTime(2020, 01, 18), 125, 135, 125, 135),
-      ChartSampleData(DateTime(2020, 01, 19), 130, 140, 130, 140),
-      ChartSampleData(DateTime(2020, 01, 20), 135, 145, 135, 145),
-    ];
-    return SfCartesianChart(
-      trackballBehavior: TrackballBehavior(
-        enable: true, activationMode: ActivationMode.singleTap
-      ),
-      crosshairBehavior: CrosshairBehavior(
-        enable: true,
-        activationMode: ActivationMode.singleTap,
-      ),
-      series: <CandleSeries>[
-        CandleSeries<ChartSampleData, DateTime>(
-          dataSource: data,
-          xValueMapper: (ChartSampleData sales, _) => sales.x,
-          lowValueMapper: (ChartSampleData sales, _) => sales.low,
-          highValueMapper: (ChartSampleData sales, _) => sales.high,
-          openValueMapper: (ChartSampleData sales, _) => sales.open,
-          closeValueMapper: (ChartSampleData sales, _) => sales.close,
+  Widget candleChart(List<TokenChartData> data, num minimum, double w) {
+    return Center(
+        child: Container(
+      width: w - 50,
+      decoration: const BoxDecoration(
+          color: Color(0xFF32385F),
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 13),
+      child: SfCartesianChart(
+        trackballBehavior: TrackballBehavior(
+            enable: true, activationMode: ActivationMode.singleTap),
+        crosshairBehavior: CrosshairBehavior(
+          enable: true,
+          activationMode: ActivationMode.singleTap,
         ),
-      ],
-      primaryXAxis: DateTimeAxis(
-          dateFormat: DateFormat.MMM(),
-          majorGridLines: MajorGridLines(width: 0)),
-      primaryYAxis: NumericAxis(
-          minimum: 70,
-          maximum: 130,
-          interval: 10,
-          numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0)),
-    );
+        series: <CandleSeries>[
+          CandleSeries<TokenChartData, DateTime>(
+            dataSource: data,
+            xValueMapper: (TokenChartData sales, _) =>
+                DateTime.parse(sales.date!),
+            lowValueMapper: (TokenChartData sales, _) => sales.low,
+            highValueMapper: (TokenChartData sales, _) => sales.high,
+            openValueMapper: (TokenChartData sales, _) => sales.open,
+            closeValueMapper: (TokenChartData sales, _) => sales.close,
+          ),
+        ],
+        zoomPanBehavior: ZoomPanBehavior(
+          enablePinching: true,
+          // enablePanning: true,
+          // enableSelectionZooming: true,
+          // enableDoubleTapZooming: true,
+        ),
+        primaryYAxis: NumericAxis(
+          minimum: minimum.toDouble(),
+          rangePadding: ChartRangePadding.additional,
+          numberFormat: NumberFormat.simpleCurrency(decimalDigits: 2),
+          majorGridLines: const MajorGridLines(width: 0),
+          majorTickLines: const MajorTickLines(size: 0),
+        ),
+        primaryXAxis: DateTimeAxis(
+            dateFormat: DateFormat.MMMd(),
+            majorGridLines: const MajorGridLines(width: 0)),
+      ),
+    ));
   }
 
   // this is used to display the card which contains a tokens balance

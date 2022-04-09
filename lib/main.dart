@@ -13,7 +13,8 @@ Future<void> main() async {
 
   final myBox = await Hive.openBox('myBox');
   final tokenBox = await Hive.openBox("tokenBox");
-   tokenBox.clear();
+  // TESTING PURPOSES
+   // tokenBox.clear();
 
   // ---------- Load Networks to DB ----------
   

@@ -32,9 +32,7 @@ class _PortfolioState extends State<Portfolio> {
               height: 50,
             )),
       ),
-
       const Text("Assets"),
-
       Expanded(
         child: Container(
             margin: const EdgeInsets.only(left: 15.0, right: 10.0),
@@ -49,22 +47,18 @@ class _PortfolioState extends State<Portfolio> {
   Widget addTokenText() {
     return Column(
       children: [
-        Text("Don't see your token?"
-          , style: TextStyle(
-              color: Colors.grey[300],
-              fontStyle: FontStyle.italic
-          ),
+        Text(
+          "Don't see your token?",
+          style:
+              TextStyle(color: Colors.grey[300], fontStyle: FontStyle.italic),
         ),
         GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, 'addToken');
-
           },
           child: const Text(
             "Tap here",
-            style: TextStyle(
-              color: Colors.blue
-            ),
+            style: TextStyle(color: Colors.blue),
           ),
         )
       ],
@@ -80,8 +74,8 @@ class _PortfolioState extends State<Portfolio> {
     double mainTokenBalance = mainBalance["mainTokenBalance"]!;
     double nativeTokenPrice = mainBalance["nativeTokenPrice"]!;
 
-    final mainBalanceCard = Helper()
-        .mainBalance(getWidth(context), nativeTokenPrice, 0, mainTokenBalance, "ETH");
+    final mainBalanceCard = Helper().mainBalance(
+        getWidth(context), nativeTokenPrice, 0, mainTokenBalance, "ETH");
 
     final tokenBox = Hive.box("tokenBox");
     String defNetwork = backend.Web3().defaultNetwork;
@@ -97,41 +91,32 @@ class _PortfolioState extends State<Portfolio> {
         tokenDividerLine(),
         const Padding(padding: EdgeInsets.only(top: 10)),
         addTokenText(),
-
       ];
     }
 
     List<TokenInfo> tokenInfoList =
         await backend.Web3().getTokenPricesBatch(allTokens);
 
-    final tokenListViewBuilder = ListView.builder(
-        shrinkWrap: true,
-        itemCount: tokenInfoList.length,
-        itemBuilder: (context, p) {
-          final temp = tokenInfoList[p];
-          final tempToken = temp.token;
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-            width: getWidth(context),
-            child: InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, 'tokenInfo', arguments: temp);
-              },
-              child: Helper().balanceCards(
-                  getWidth(context),
-                  temp.balance,
-                  temp.priceUSD,
-                  temp.balance * temp.priceUSD,
-                  0,
-                  tempToken.symbol),
-            ),
-          );
-        });
+    final tokenListViewBuilder = tokenInfoList.map((temp) {
+      final tempToken = temp.token;
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+        width: getWidth(context),
+        child: InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, 'tokenInfo', arguments: temp);
+          },
+          child: Helper().balanceCards(getWidth(context), temp.balance,
+              temp.priceUSD, temp.balance * temp.priceUSD, 0, tempToken.symbol),
+        ),
+      );
+    }).toList();
+
     return [
       mainBalanceCard,
       const Padding(padding: EdgeInsets.only(top: 30)),
       tokenDividerLine(),
-      tokenListViewBuilder,
+      ...tokenListViewBuilder,
       const Padding(padding: EdgeInsets.only(top: 30)),
     ];
   }
@@ -294,23 +279,25 @@ class _PortfolioState extends State<Portfolio> {
         ),
         body: RefreshIndicator(
           onRefresh: () => _refreshProducts(context),
-          child: SafeArea(
-              child: Padding(
-            padding: EdgeInsets.only(top: 35),
-            child: FutureBuilder<List<Widget>>(
-              future: _future,
-              builder: (context, AsyncSnapshot<List<Widget>> snapshot) {
-                if (snapshot.hasData) {
-                  return Column(
-                    children: snapshot.data!,
-                  );
-                } else if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
-            ),
-          )),
+          child: SingleChildScrollView(
+            child: SafeArea(
+                child: Padding(
+              padding: EdgeInsets.only(top: 35),
+              child: FutureBuilder<List<Widget>>(
+                future: _future,
+                builder: (context, AsyncSnapshot<List<Widget>> snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: snapshot.data!,
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
+            )),
+          ),
         ),
       ),
     );

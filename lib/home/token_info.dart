@@ -2,6 +2,7 @@ import 'package:eth_wallet/backend/ethplorer.dart';
 import 'package:eth_wallet/home/library.dart';
 import 'package:eth_wallet/util/library.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class TokenInfoPage extends StatefulWidget {
   final TokenInfo tokenInfo;
@@ -20,7 +21,7 @@ class _TokenInfoPageState extends State<TokenInfoPage> {
   void initState() {
     super.initState();
     _tokenInfoFuture = _getTokenInfo();
-    //_tokenPriceHistoryFuture = _getTokenPriceHistoryGrouped();
+    _tokenPriceHistoryFuture = _getTokenPriceHistoryGrouped();
   }
 
   @override
@@ -39,15 +40,19 @@ class _TokenInfoPageState extends State<TokenInfoPage> {
                   if (snapshot.hasData) {
                     Map<dynamic, dynamic> data = snapshot.data!;
                     return Helper().tokenDescriptionCard(
-                        getWidth(context),
-                        widget.tokenInfo.priceUSD * widget.tokenInfo.balance,
-                        data["price"] is bool ? 0 : data["price"]["diff"],
-                        widget.tokenInfo.balance,
-                        data["name"],
-                        data["symbol"],
-                        data.containsKey("image")
-                            ? "https://ethplorer.io/${data["image"]}"
-                            : "");
+                      getWidth(context),
+                      widget.tokenInfo.priceUSD,
+                      data["price"] is bool ? 0 : data["price"]["diff"],
+                      widget.tokenInfo.balance,
+                      data["name"],
+                      data["symbol"],
+                      data.containsKey("image")
+                          ? "https://ethplorer.io/${data["image"]}"
+                          : "",
+                      data.containsKey("description")
+                          ? data["description"]
+                          : null,
+                    );
                   } else if (snapshot.hasError) {
                     return Text(snapshot.error.toString());
                   } else {
@@ -57,24 +62,61 @@ class _TokenInfoPageState extends State<TokenInfoPage> {
                   }
                 }),
             const Padding(padding: EdgeInsets.only(top: 20)),
-            FutureBuilder<Map<dynamic, dynamic>>(
+            FutureBuilder<Map>(
                 future: _tokenPriceHistoryFuture,
-                builder: (BuildContext context,
-                    AsyncSnapshot<Map<dynamic, dynamic>> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
                   if (snapshot.hasData) {
-                    // TODO construct graph
-                    Map<dynamic, dynamic> data = snapshot.data!;
-                    print(data);
-                    return Container();
+                    try {
+                      Map data = snapshot.data!;
+                      var priceData = data["history"]["prices"];
+                      if (priceData is bool) {
+                        // Data is empty
+                        return Container();
+                      } else {
+                        priceData = priceData as List;
+                      }
+
+                      num minimum = double.infinity;
+                      List<TokenChartData> chartData = [];
+                      for (var i = 0; i < priceData.length; i++) {
+                        num open = priceData[i]["open"];
+                        num close = priceData[i]["close"];
+                        num high = priceData[i]["high"];
+                        num low = priceData[i]["low"];
+                        num minValue = [open, close, high, low].reduce(min);
+                        if (minValue < minimum) {
+                          minimum = minValue;
+                        }
+                        TokenChartData temp = TokenChartData(
+                          ts: priceData[i]["ts"],
+                          date: priceData[i]["date"],
+                          hour: priceData[i]["hour"],
+                          open: open,
+                          close: close,
+                          high: high,
+                          low: low,
+                          volume: priceData[i]["volume"],
+                          volumeConverted: priceData[i]["volumeConverted"],
+                          cap: priceData[i]["cap"],
+                          average: priceData[i]["average"],
+                        );
+                        chartData.add(temp);
+                      }
+                      return Helper().candleChart(
+                          chartData, minimum.floor(), getWidth(context));
+                    } catch (e) {
+                      print(e);
+                      return Container();
+                    }
                   } else if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
+                    print(snapshot.error);
+                    return Container();
                   } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return Container();
                   }
                 }),
-            Helper().candleChart(0),
+            const Padding(padding: EdgeInsets.only(top: 20)),
+            Helper().snsButtonRow()
           ],
         ),
       ),
@@ -95,7 +137,7 @@ class _TokenInfoPageState extends State<TokenInfoPage> {
   Future<Map<dynamic, dynamic>> _getTokenPriceHistoryGrouped() async {
     dynamic response = await Ethplorer().getFromAPI(
         "getTokenPriceHistoryGrouped", widget.tokenInfo.token.address, {
-      "period": "1",
+      "period": "10",
     });
 
     if (response == null) {
