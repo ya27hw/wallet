@@ -15,9 +15,11 @@ class Portfolio extends StatefulWidget {
 
 class _PortfolioState extends State<Portfolio> {
   Future<List<Widget>>? _future;
+  late Box _tokenAmountBox;
 
   @override
   void initState() {
+    _tokenAmountBox = Hive.box("tokenAmountBox");
     _future = getData();
     super.initState();
   }
@@ -100,6 +102,7 @@ class _PortfolioState extends State<Portfolio> {
 
     final tokenListViewBuilder = tokenInfoList.map((temp) {
       final tempToken = temp.token;
+      _tokenAmountBox.put(tempToken.address, temp.balance);
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
         width: getWidth(context),

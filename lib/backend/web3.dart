@@ -334,6 +334,8 @@ class Web3 {
   Future<void> swapTokens(Token to, double amount, [Token? from]) async {
     // If no from token is specified, we can assume the user shall be using SwapEthForExactTokens
     utils.Network network = _myBox.get(defaultNetwork) as utils.Network;
+    print(from?.address);
+    print(to.address);
 
     Web3Client client = _getClient();
     final toContract = tokenG.Token(
@@ -345,20 +347,34 @@ class Web3 {
         client: client,
         chainId: network.chainID);
     if (from != null) {
-      final fromContract = tokenG.Token(
-          address: EthereumAddress.fromHex(from.address),
-          client: client,
-          chainId: network.chainID);
+      final tokenInAmount = BigInt.from(amount * pow(10, from.decimals));
 
-      final tokenInAmount =
-          EtherAmount.fromUnitAndValue(decimalToUnit(from.decimals), amount);
-
-      final tokenOutAmount = await swapContract.getAmountsOut(
-          tokenInAmount.getInWei, [
+      final tokenOutAmount = await swapContract.getAmountsOut(tokenInAmount, [
         EthereumAddress.fromHex(from.address),
         EthereumAddress.fromHex(to.address)
       ]);
-      print(tokenOutAmount);
+      final tokenOutMinAmount =
+          tokenOutAmount[1] - (tokenOutAmount[1] * BigInt.from(0.1));
+
+      // final approveBUSD = await toContract.approve(
+      //     EthereumAddress.fromHex(network.swapRouterAddress), tokenInAmount,
+      //     credentials: myWallet.privateKey);
+      // print("Approve BUSD: $approveBUSD");
+
+      // TODO add tx hash to DB
+      print("transferring $tokenInAmount (${from.symbol}) -- ${from.address}");
+      print("receiving $tokenOutMinAmount (${to.symbol}) -- ${to.address}");
+
+      final swapTx = await swapContract.swapExactTokensForTokens(
+          tokenInAmount,
+          tokenOutMinAmount,
+          [
+            EthereumAddress.fromHex(from.address),
+            EthereumAddress.fromHex(to.address)
+          ],
+          myWallet.privateKey.address,
+          BigInt.from(DateTime.now().millisecondsSinceEpoch + 10 * 60 * 1000),
+          credentials: myWallet.privateKey);
     } else {}
 
     // final WBNB = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
