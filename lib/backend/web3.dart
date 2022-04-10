@@ -338,6 +338,8 @@ class Web3 {
     print(to.address);
 
     Web3Client client = _getClient();
+    final gasPrice = await client.getGasPrice();
+
     final toContract = tokenG.Token(
         address: EthereumAddress.fromHex(to.address),
         client: client,
@@ -356,10 +358,10 @@ class Web3 {
       final tokenOutMinAmount =
           tokenOutAmount[1] - (tokenOutAmount[1] * BigInt.from(0.1));
 
-      // final approveBUSD = await toContract.approve(
-      //     EthereumAddress.fromHex(network.swapRouterAddress), tokenInAmount,
-      //     credentials: myWallet.privateKey);
-      // print("Approve BUSD: $approveBUSD");
+      final approveTokenIn = await toContract.approve(
+          EthereumAddress.fromHex(network.swapRouterAddress), tokenInAmount,
+          credentials: myWallet.privateKey);
+      print("Approve Token: $approveTokenIn");
 
       // TODO add tx hash to DB
       print("transferring $tokenInAmount (${from.symbol}) -- ${from.address}");
@@ -374,7 +376,9 @@ class Web3 {
           ],
           myWallet.privateKey.address,
           BigInt.from(DateTime.now().millisecondsSinceEpoch + 10 * 60 * 1000),
-          credentials: myWallet.privateKey);
+          credentials: myWallet.privateKey,
+          transaction: Transaction(gasPrice: gasPrice)
+          );
     } else {}
 
     // final WBNB = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
@@ -411,10 +415,10 @@ class Web3 {
     // // Subtract 1 ether to cover the gas cost
     // final WBNBOut = WBNBOutMin - BigInt.from(1000000000000000);
     // print(WBNBOut);
-    // final approveBUSD = await BUSDContract.approve(
+    // final approveTokenIn = await BUSDContract.approve(
     //     EthereumAddress.fromHex(router), BUSDIn.getInWei,
     //     credentials: myWallet.privateKey);
-    // print(approveBUSD);
+    // print(approveTokenIn);
 
     // final swapTx = await routerContract.swapExactTokensForTokens(
     //     BUSDIn.getInWei,
