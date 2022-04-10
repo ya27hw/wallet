@@ -333,6 +333,10 @@ class Web3 {
 
   Future<void> swapTokens(Token to, double amount, [Token? from]) async {
     // If no from token is specified, we can assume the user shall be using SwapEthForExactTokens
+
+    // NOTES
+    // BSC20-Test WBNB --> Anything WORKS
+    // Ropsten USDC --> WETH WORKS
     utils.Network network = _myBox.get(defaultNetwork) as utils.Network;
     print(from?.address);
     print(to.address);
