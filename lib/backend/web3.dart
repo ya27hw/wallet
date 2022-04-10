@@ -366,7 +366,6 @@ class Web3 {
       // TODO add tx hash to DB
       print("transferring $tokenInAmount (${from.symbol}) -- ${from.address}");
       print("receiving $tokenOutMinAmount (${to.symbol}) -- ${to.address}");
-
       final swapTx = await swapContract.swapExactTokensForTokens(
           tokenInAmount,
           tokenOutMinAmount,
@@ -377,8 +376,7 @@ class Web3 {
           myWallet.privateKey.address,
           BigInt.from(DateTime.now().millisecondsSinceEpoch + 10 * 60 * 1000),
           credentials: myWallet.privateKey,
-          transaction: Transaction(gasPrice: gasPrice)
-          );
+          transaction: Transaction(gasPrice: gasPrice));
     } else {}
 
     // final WBNB = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
