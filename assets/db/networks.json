@@ -87,7 +87,7 @@
       "swap": {
         "contract": "0x1024efdd8317773e50af245177d5e99b3360d25b",
         "router": {
-          "address": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+          "address": "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3",
           "ABI": [
             "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)"
           ]

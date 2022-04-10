@@ -244,6 +244,24 @@ class _PortfolioState extends State<Portfolio> {
                   spacing: 20,
                   children: const [
                     Icon(
+                      LineIcons.alternateExchange,
+                      size: 20,
+                    ),
+                    Text(
+                      "Swap Tokens",
+                      style: TextStyle(fontSize: 16),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, 'swap');
+                },
+              ),
+              ListTile(
+                title: Wrap(
+                  spacing: 20,
+                  children: const [
+                    Icon(
                       LineIcons.history,
                       size: 20,
                     ),

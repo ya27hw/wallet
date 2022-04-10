@@ -1,4 +1,5 @@
 import 'package:eth_wallet/token.g.dart' as tokenG;
+import 'package:eth_wallet/swap.g.dart' as swapG;
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import "package:eth_wallet/util/library.dart" as utils;
@@ -29,6 +30,27 @@ class Web3 {
       case "finney":
         return EtherUnit.finney;
       case "ether":
+        return EtherUnit.ether;
+      default:
+        return EtherUnit.ether;
+    }
+  }
+
+  EtherUnit decimalToUnit(int decimal) {
+    switch (decimal) {
+      case 0:
+        return EtherUnit.wei;
+      case 3:
+        return EtherUnit.kwei;
+      case 6:
+        return EtherUnit.mwei;
+      case 9:
+        return EtherUnit.gwei;
+      case 12:
+        return EtherUnit.szabo;
+      case 15:
+        return EtherUnit.finney;
+      case 18:
         return EtherUnit.ether;
       default:
         return EtherUnit.ether;
@@ -307,6 +329,84 @@ class Web3 {
       "mainTokenBalance": mainTokenBalance,
       "nativeTokenPrice": formatDouble(nativeTokenPrice, 2),
     };
+  }
+
+  Future<void> swapTokens(Token to, double amount, [Token? from]) async {
+    // If no from token is specified, we can assume the user shall be using SwapEthForExactTokens
+    utils.Network network = _myBox.get(defaultNetwork) as utils.Network;
+
+    Web3Client client = _getClient();
+    final toContract = tokenG.Token(
+        address: EthereumAddress.fromHex(to.address),
+        client: client,
+        chainId: network.chainID);
+    final swapContract = swapG.Swap(
+        address: EthereumAddress.fromHex(network.swapRouterAddress),
+        client: client,
+        chainId: network.chainID);
+    if (from != null) {
+      final fromContract = tokenG.Token(
+          address: EthereumAddress.fromHex(from.address),
+          client: client,
+          chainId: network.chainID);
+
+      final tokenInAmount =
+          EtherAmount.fromUnitAndValue(decimalToUnit(from.decimals), amount);
+
+      final tokenOutAmount = await swapContract.getAmountsOut(
+          tokenInAmount.getInWei, [
+        EthereumAddress.fromHex(from.address),
+        EthereumAddress.fromHex(to.address)
+      ]);
+      print(tokenOutAmount);
+    } else {}
+
+    // final WBNB = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
+    // final WBNBContract = tokenG.Token(
+    //     address: EthereumAddress.fromHex(WBNB),
+    //     client: _getClient(),
+    //     chainId: 97);
+
+    // final BUSD = "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7";
+    // final BUSDContract = tokenG.Token(
+    //     address: EthereumAddress.fromHex(BUSD),
+    //     client: _getClient(),
+    //     chainId: 97);
+
+    // final router = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
+
+    // final swapContract = _getSwapContract();
+    // final routerContract = swapG.Swap(
+    //     address: EthereumAddress.fromHex(router),
+    //     client: _getClient(),
+    //     chainId: 97);
+
+    // final BUSDIn = EtherAmount.fromUnitAndValue(EtherUnit.ether, 5);
+
+    // final getAmountsOutFunction = swapContract.function('getAmountsOut');
+
+    // final amounts = await _getClient()
+    //     .call(contract: swapContract, function: getAmountsOutFunction, params: [
+    //   BUSDIn.getInWei,
+    //   [EthereumAddress.fromHex(BUSD), EthereumAddress.fromHex(WBNB)]
+    // ]);
+    // final WBNBOutMin = amounts.first[1] as BigInt;
+    // print(WBNBOutMin);
+    // // Subtract 1 ether to cover the gas cost
+    // final WBNBOut = WBNBOutMin - BigInt.from(1000000000000000);
+    // print(WBNBOut);
+    // final approveBUSD = await BUSDContract.approve(
+    //     EthereumAddress.fromHex(router), BUSDIn.getInWei,
+    //     credentials: myWallet.privateKey);
+    // print(approveBUSD);
+
+    // final swapTx = await routerContract.swapExactTokensForTokens(
+    //     BUSDIn.getInWei,
+    //     WBNBOut,
+    //     [EthereumAddress.fromHex(BUSD), EthereumAddress.fromHex(WBNB)],
+    //     EthereumAddress.fromHex("0x81839B36E8B7EDe6fcFaD0b07b12A19980035A30"),
+    //     BigInt.from(1649615820),
+    //     credentials: myWallet.privateKey);
   }
 
   Future<void> sendTokenTransaction(String receivingAddress, double value,

@@ -23,7 +23,7 @@ class _SendState extends State<Send> {
   QRViewController? controller;
 
   String dropDownValue = "";
-  String operationMode = "";
+  String operationMode = "ETH";
   int decimals = 0;
   String symbol = "";
 
@@ -117,45 +117,49 @@ class _SendState extends State<Send> {
                   },
                 ),
               ),
-              ListTile(
-                title: const Text("Other Tokens"),
-                leading: Radio(
-                  value: 'OT',
-                  groupValue: operationMode,
-                  onChanged: (value) {
-                    setState(() {
-                      operationMode = value.toString();
-                    });
-                  },
-                ),
-              ),
+              dropDownValue == ""
+                  ? Container()
+                  : ListTile(
+                      title: const Text("Other Tokens"),
+                      leading: Radio(
+                        value: 'OT',
+                        groupValue: operationMode,
+                        onChanged: (value) {
+                          setState(() {
+                            operationMode = value.toString();
+                          });
+                        },
+                      ),
+                    ),
               operationMode == "ETH"
                   ? Container()
-                  : DropdownButton(
-                      underline: Container(
-                        decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.zero),
-                      ),
-                      dropdownColor: secondaryDarkColor(),
-                      items: castedTokenList
-                          .map<DropdownMenuItem<String>>((Token itemOne) {
-                        return DropdownMenuItem<String>(
-                            value: itemOne.address,
-                            child: Text(itemOne.symbol));
-                      }).toList(),
-                      value: dropDownValue.isEmpty
-                          ? castedTokenList[0].address
-                          : dropDownValue,
-                      onChanged: (value) {
-                        setState(() {
-                          dropDownValue = value.toString();
-                          Token temp = castedTokenList.firstWhere(
-                              (Token item) => item.address == value);
-                          decimals = temp.decimals;
-                          symbol = temp.symbol;
-                        });
-                      },
-                    ),
+                  : dropDownValue == ""
+                      ? Container()
+                      : DropdownButton(
+                          underline: Container(
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.zero),
+                          ),
+                          dropdownColor: secondaryDarkColor(),
+                          items: castedTokenList
+                              .map<DropdownMenuItem<String>>((Token itemOne) {
+                            return DropdownMenuItem<String>(
+                                value: itemOne.address,
+                                child: Text(itemOne.symbol));
+                          }).toList(),
+                          value: dropDownValue.isEmpty
+                              ? castedTokenList[0].address
+                              : dropDownValue,
+                          onChanged: (value) {
+                            setState(() {
+                              dropDownValue = value.toString();
+                              Token temp = castedTokenList.firstWhere(
+                                  (Token item) => item.address == value);
+                              decimals = temp.decimals;
+                              symbol = temp.symbol;
+                            });
+                          },
+                        ),
               Container(
                 decoration: BoxDecoration(
                     color: const Color(0xFF32385F),
