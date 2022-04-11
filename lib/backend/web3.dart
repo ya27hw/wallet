@@ -338,8 +338,9 @@ class Web3 {
     // BSC20-Test WBNB --> Anything WORKS
     // Ropsten USDC --> WETH WORKS
     utils.Network network = _myBox.get(defaultNetwork) as utils.Network;
-    print(from?.address);
-    print(to.address);
+    // print(from?.address);
+    // print(to.address);
+
 
     Web3Client client = _getClient();
     final gasPrice = await client.getGasPrice();
@@ -370,7 +371,7 @@ class Web3 {
       // TODO add tx hash to DB
       print("transferring $tokenInAmount (${from.symbol}) -- ${from.address}");
       print("receiving $tokenOutMinAmount (${to.symbol}) -- ${to.address}");
-      final swapTx = await swapContract.swapExactTokensForTokens(
+      final swapTx = await swapContract.swapTokensForExactTokens(
           tokenInAmount,
           tokenOutMinAmount,
           [
