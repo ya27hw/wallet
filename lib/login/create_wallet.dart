@@ -16,7 +16,6 @@ class _CreateWalletState extends State<CreateWallet> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _passwordController.dispose();
   }
@@ -81,7 +80,7 @@ class _CreateWalletState extends State<CreateWallet> {
                 // CONTINUE Button
                 child: ElevatedButton(
                   child: _isLoading
-                      ? CircularProgressIndicator(
+                      ? const CircularProgressIndicator(
                           backgroundColor: Colors.black,
                           color: Colors.white,
                           strokeWidth: 3,
@@ -106,10 +105,6 @@ class _CreateWalletState extends State<CreateWallet> {
                           setState(() {
                             _isLoading = true;
                           });
-
-                          // wait for 5 seconds
-                          await Future.delayed(
-                              const Duration(milliseconds: 500));
 
                           await be.Web3()
                               .createWallet(_passwordController.text);
