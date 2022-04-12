@@ -3,6 +3,7 @@ import 'package:eth_wallet/util/classes.dart';
 import 'package:eth_wallet/util/tools.dart';
 import 'package:flutter/material.dart';
 import 'package:eth_wallet/routes/library.dart' as route;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> main() async {
@@ -48,6 +49,9 @@ class MyApp extends StatelessWidget {
         initialRoute: exists ? route.verify : route.splashLogin,
         onGenerateRoute: route.controller,
         theme: ThemeData(
+          textTheme: GoogleFonts.poppinsTextTheme(
+            ThemeData.dark().textTheme,
+          ),
             colorScheme: ThemeData().colorScheme.copyWith(
                 primary: const Color(0xFF41CD7D), brightness: Brightness.dark)),
         home: const MyHomePage(),

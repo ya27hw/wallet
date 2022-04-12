@@ -34,9 +34,9 @@ Future<void> loadNetworks() async {
     Network network = Network(
       tokenNetworks[key]['unitFormat'],
       tokenNetworks[key]['api'],
-      tokenNetworks[key]["usdt"],
-      tokenNetworks[key]['swap']["contract"],
-      tokenNetworks[key]['swap']["router"]["address"],
+      tokenNetworks[key]["stableCoin"],
+      tokenNetworks[key]["contract"],
+      tokenNetworks[key]["router"],
       key,
       tokenNetworks[key]['chainID'],
     );

@@ -29,7 +29,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_fonts:
+  google_fonts: ^2.3.1
   line_icons: ^2.0.1
   rotated_corner_decoration: ^2.0.0
   flutter_speed_dial: ^5.0.0+1
@@ -57,6 +57,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   liquid_pull_to_refresh: ^3.0.1
   syncfusion_flutter_charts: ^20.1.47+1
+  flutter_svg: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +88,7 @@ flutter:
     - assets/db/networks.json
     - assets/db/swapABI.json
     - assets/db/tokenABI.json
+    - assets/media/
   #   - assets/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

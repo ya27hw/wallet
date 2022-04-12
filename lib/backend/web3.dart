@@ -1,5 +1,3 @@
-import 'package:eth_wallet/token.g.dart' as tokenG;
-import 'package:eth_wallet/swap.g.dart' as swapG;
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import "package:eth_wallet/util/library.dart" as utils;
@@ -107,11 +105,11 @@ class Web3 {
     if (!isValid) {
       return [];
     }
+    List<utils.ImportedAddresses> accs = [];
 
     final hdwallet = HDKey.fromMnemonic(mnemonic);
     var walletHdpath = "m/44'/60'/0'/0";
 
-    List<utils.ImportedAddresses> accs = [];
     for (var i = 0; i < 10; i++) {
       String path = "$walletHdpath/$i";
       HDKey key = hdwallet.derive(path);
@@ -341,15 +339,14 @@ class Web3 {
     // print(from?.address);
     // print(to.address);
 
-
     Web3Client client = _getClient();
     final gasPrice = await client.getGasPrice();
 
-    final toContract = tokenG.Token(
+    final toContract = utils.TokenG(
         address: EthereumAddress.fromHex(to.address),
         client: client,
         chainId: network.chainID);
-    final swapContract = swapG.Swap(
+    final swapContract = utils.Swap(
         address: EthereumAddress.fromHex(network.swapRouterAddress),
         client: client,
         chainId: network.chainID);
@@ -385,13 +382,13 @@ class Web3 {
     } else {}
 
     // final WBNB = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
-    // final WBNBContract = tokenG.Token(
+    // final WBNBContract = utils.TokenG(
     //     address: EthereumAddress.fromHex(WBNB),
     //     client: _getClient(),
     //     chainId: 97);
 
     // final BUSD = "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7";
-    // final BUSDContract = tokenG.Token(
+    // final BUSDContract = utils.TokenG(
     //     address: EthereumAddress.fromHex(BUSD),
     //     client: _getClient(),
     //     chainId: 97);
@@ -399,7 +396,7 @@ class Web3 {
     // final router = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
 
     // final swapContract = _getSwapContract();
-    // final routerContract = swapG.Swap(
+    // final routerContract = utils.Swap(
     //     address: EthereumAddress.fromHex(router),
     //     client: _getClient(),
     //     chainId: 97);
@@ -453,7 +450,7 @@ class Web3 {
       await ethClient.sendTransaction(myWallet.privateKey, transaction,
           chainId: defaultNetwork.chainID);
     } else {
-      final tokenContract = tokenG.Token(
+      final tokenContract = utils.TokenG(
           address: EthereumAddress.fromHex(tokenContractAddress),
           client: ethClient);
 

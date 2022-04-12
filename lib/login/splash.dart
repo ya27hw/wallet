@@ -1,5 +1,6 @@
 import 'package:eth_wallet/util/library.dart' as utils;
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SplashLogin extends StatefulWidget {
   const SplashLogin({Key? key}) : super(key: key);
@@ -21,29 +22,34 @@ class _SplashLoginState extends State<SplashLogin> {
           Padding(
             padding: EdgeInsets.only(top: utils.getHeight(context) * 0.17),
             child: const Text(
-              "Crypto Wallet",
+              "Ethereum Wallet",
               style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: utils.getHeight(context) * 0.1),
+            padding: EdgeInsets.only(top: utils.getHeight(context) * 0.04),
             child: const Text(
               "Begin your crypto journey today.",
               style: TextStyle(fontSize: 14),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 70),
+            child: SvgPicture.asset(
+              "assets/media/coin_wallet.svg",
+              height: 150,
+              width: 150,
+              color: const Color(0xFF41CD7D),
+            ),
+          ),
           Container(
-              padding: EdgeInsets.only(top: utils.getHeight(context) * 0.3),
+              padding: EdgeInsets.only(top: utils.getHeight(context) * 0.15),
               child: utils.Helper().Button(utils.getWidth(context),
                   "Import a Wallet", context, "importWallet")),
           Container(
               padding: const EdgeInsets.only(top: 30),
               child: utils.Helper().Button(utils.getWidth(context),
                   "Create a Wallet", context, "createWallet")),
-          Container(
-              padding: const EdgeInsets.only(top: 30),
-              child: utils.Helper().Button(utils.getWidth(context),
-                  "Portfolio (dev)", context, "portfolio")),
         ],
       ),
     ));

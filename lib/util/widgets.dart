@@ -228,7 +228,7 @@ class Helper {
               Padding(
                 padding: EdgeInsets.only(left: 20),
                 child: Text(
-                  "Wallet Balance (USD)",
+                  "Wallet Balance",
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               )
