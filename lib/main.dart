@@ -9,8 +9,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 Future<void> main() async {
   // ---------- Hive ----------
   await Hive.initFlutter();
-  Hive.registerAdapter(NetworkAdapter());
-  Hive.registerAdapter(TokenAdapter());
+
+  Hive
+    ..registerAdapter(NetworkAdapter())
+    ..registerAdapter(TokenAdapter())
+    ..registerAdapter(TransactionTypeAdapter())
+    ..registerAdapter(TransactionDataAdapter());
 
   final myBox = await Hive.openBox('myBox');
   final tokenBox = await Hive.openBox("tokenBox");
@@ -49,9 +53,9 @@ class MyApp extends StatelessWidget {
         initialRoute: exists ? route.verify : route.splashLogin,
         onGenerateRoute: route.controller,
         theme: ThemeData(
-          textTheme: GoogleFonts.poppinsTextTheme(
-            ThemeData.dark().textTheme,
-          ),
+            textTheme: GoogleFonts.poppinsTextTheme(
+              ThemeData.dark().textTheme,
+            ),
             colorScheme: ThemeData().colorScheme.copyWith(
                 primary: const Color(0xFF41CD7D), brightness: Brightness.dark)),
         home: const MyHomePage(),

@@ -31,6 +31,27 @@ class Helper {
     );
   }
 
+  Widget transactionCard(TransactionData t) {
+    return Card(
+      elevation: 5,
+      color: secondaryDarkColor(),
+      child: ListTile(
+        leading: t.transactionType == TransactionType.send
+            ? const Icon(LineIcons.arrowCircleUp)
+            : const Icon(LineIcons.alternateExchange),
+        title: Text("Sent ${t.value} ${t.sentTokenSymbol}"),
+        subtitle: Text(
+            "${t.transactionType == TransactionType.send ? "To" : "From"} ${displayAddress(t.to)}"),
+        trailing: IconButton(
+          icon: const Icon(LineIcons.infoCircle),
+          onPressed: () async {
+            await launch("https://ropsten.etherscan.io/tx/${t.hash}");
+          },
+        ),
+      ),
+    );
+  }
+
   Future showADialog(BuildContext context, String title, String content) {
     return showDialog(
       context: context,

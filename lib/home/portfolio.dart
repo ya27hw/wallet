@@ -279,7 +279,7 @@ class _PortfolioState extends State<Portfolio> {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pushNamed(context, 'activity');
                   },
                 ),
                 ListTile(
