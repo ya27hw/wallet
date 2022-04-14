@@ -37,11 +37,27 @@ class Helper {
       color: secondaryDarkColor(),
       child: ListTile(
         leading: t.transactionType == TransactionType.send
-            ? const Icon(LineIcons.arrowCircleUp)
-            : const Icon(LineIcons.alternateExchange),
+            ? const Icon(
+                LineIcons.arrowCircleUp,
+                size: 35,
+              )
+            : const Icon(
+                LineIcons.alternateExchange,
+                size: 35,
+              ),
         title: Text("Sent ${t.value} ${t.sentTokenSymbol}"),
-        subtitle: Text(
-            "${t.transactionType == TransactionType.send ? "To" : "From"} ${displayAddress(t.to)}"),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+                "${t.transactionType == TransactionType.send ? "To" : "From"} ${displayAddress(t.to)}"),
+            Text(
+              DateFormat.yMMMMd()
+                  .add_jm()
+                  .format(DateTime.fromMillisecondsSinceEpoch(t.epoch)),
+            )
+          ],
+        ),
         trailing: IconButton(
           icon: const Icon(LineIcons.infoCircle),
           onPressed: () async {
