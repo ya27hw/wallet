@@ -57,7 +57,7 @@ class Helper {
     BalanceIndicator mbi = BalanceIndicator();
 
     if (change > 0) {
-      mbi.color = Colors.greenAccent;
+      mbi.color = const Color(0xFF41CD7D);
       mbi.symbol = "+";
     } else if (change < 0) {
       mbi.color = Colors.redAccent;
@@ -105,7 +105,7 @@ class Helper {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    "\$$balance",
+                    "\$${formatDouble(balance, 2)}",
                     style: const TextStyle(fontSize: 40),
                   ),
                   Container(
@@ -315,7 +315,7 @@ class Helper {
       double balanceFiat, double change, String tokenSymbol) {
     return Container(
       foregroundDecoration: const RotatedCornerDecoration(
-        color: Colors.redAccent,
+        color: Color(0xFF41CD7D),
         geometry: BadgeGeometry(
             width: 45,
             height: 45,

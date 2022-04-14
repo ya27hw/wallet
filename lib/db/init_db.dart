@@ -5,6 +5,8 @@ import 'package:hive/hive.dart';
 
 Box box = Hive.box("myBox");
 
+
+
 Future<void> initDB() async {
   loadNetworks();
   loadTokenABI();

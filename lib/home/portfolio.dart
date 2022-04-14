@@ -107,7 +107,7 @@ class _PortfolioState extends State<Portfolio> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
         width: getWidth(context),
         child: InkWell(
-          onTap: defNetwork != "erc20"
+          onTap: defNetwork != "mainnet"
               ? null
               : () {
                   Navigator.pushNamed(context, 'tokenInfo', arguments: temp);
@@ -149,7 +149,7 @@ class _PortfolioState extends State<Portfolio> {
           floatingActionButton: SpeedDial(
             animatedIcon: AnimatedIcons.menu_arrow,
             openCloseDial: dialOpen,
-            backgroundColor: Colors.redAccent,
+            backgroundColor: Color(0xFF41CD7D),
             overlayColor: primaryDarkColor(),
             overlayOpacity: 0.5,
             spacing: 15,

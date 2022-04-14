@@ -94,7 +94,6 @@ class Web3 {
   void _initWallet(EthPrivateKey creds, String password, [Random? rng]) async {
     rng ??= Random.secure();
     myWallet = Wallet.createNew(creds, password, rng);
-
     String wJson = myWallet.toJson();
     utils.writeWallet(wJson);
   }
@@ -207,8 +206,6 @@ class Web3 {
 
   Future<double> getTokenPrice(String tokenAddress, int decimals,
       [DeployedContract? tokenContract, DeployedContract? swapContract]) async {
-    // TODO get token price
-
     final client = _getClient();
     Network network = _myBox.get(_myBox.get("defaultNetwork"));
     if (tokenAddress == network.stableCoinAddress) {
@@ -240,6 +237,12 @@ class Web3 {
     }
   }
 
+  Future<double> getGasFees() async {
+    final client = _getClient();
+    final gasPriceInEther = await client.getGasPrice();
+    return gasPriceInEther.getValueInUnit(stringToUnit("gwei"));
+  }
+
   Future<double> _tokenBalanceOf(String tokenAddress, int decimals) async {
     final tokenContract = _getTokenContract(tokenAddress);
     final client = _getClient();
@@ -262,7 +265,6 @@ class Web3 {
   }
 
   Future<List<utils.TokenInfo>> getTokenPricesBatch(List<Token> tokens) async {
-    // TODO get token prices
     List<utils.TokenInfo> tokenInfoList = [];
     for (Token token in tokens) {
       double tokenPrice = await getTokenPrice(token.address, token.decimals);
@@ -310,10 +312,6 @@ class Web3 {
       print(e);
       return -1;
     }
-  }
-
-  double formatDouble(double value, int decimalPlaces) {
-    return double.parse(value.toStringAsFixed(decimalPlaces));
   }
 
   Future<Map<String, double>> mainBalanceCard() async {
@@ -447,22 +445,48 @@ class Web3 {
         value: EtherAmount.inWei(valueWei),
       );
 
-      await ethClient.sendTransaction(myWallet.privateKey, transaction,
+      final hash = await ethClient.sendTransaction(
+          myWallet.privateKey, transaction,
           chainId: defaultNetwork.chainID);
+      addToActivity(utils.TransactionData(
+          hash,
+          utils.TransactionType.send,
+          DateTime.now().millisecondsSinceEpoch,
+          myWallet.privateKey.address.hex,
+          receivingAddress,
+          value,
+          "ETH"));
     } else {
       final tokenContract = utils.TokenG(
           address: EthereumAddress.fromHex(tokenContractAddress),
           client: ethClient);
 
-      await tokenContract.transfer(EthereumAddress.fromHex(receivingAddress),
+      final hash = await tokenContract.transfer(
+          EthereumAddress.fromHex(receivingAddress),
           BigInt.from(value * pow(10, decimals)),
           credentials: myWallet.privateKey,
           transaction: Transaction(
             gasPrice: gasPrice,
             maxGas: 100000,
           ));
+
+      String symbol = await tokenContract.symbol();
+
+      addToActivity(utils.TransactionData(
+          hash,
+          utils.TransactionType.send,
+          DateTime.now().millisecondsSinceEpoch,
+          myWallet.privateKey.address.hex,
+          receivingAddress,
+          value,
+          symbol));
     }
 
     // TODO: Record transaction in activity later
+  }
+
+  void addToActivity(utils.TransactionData transaction) {
+    final activityBox = Hive.box("activityBox");
+    activityBox.add(transaction);
   }
 }

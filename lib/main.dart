@@ -19,7 +19,7 @@ Future<void> main() async {
   final activityBox = await Hive.openBox("activityBox");
 
   // TESTING PURPOSES
-  await myBox.clear();
+  // await myBox.clear();
   //  tokenBox.clear();
 
   // ---------- Load Networks to DB ----------

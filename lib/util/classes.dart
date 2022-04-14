@@ -86,3 +86,34 @@ class Token extends HiveObject {
 
   Token(this.symbol, this.address, this.decimals);
 }
+
+@HiveType(typeId: 3)
+enum TransactionType {
+  @HiveField(0)
+  send,
+  @HiveField(1)
+  receive,
+  @HiveField(2)
+  swap
+}
+
+@HiveType(typeId: 2)
+class TransactionData extends HiveObject {
+  @HiveField(0)
+  final String hash;
+  @HiveField(1)
+  final TransactionType transactionType;
+  @HiveField(2)
+  final int epoch;
+  @HiveField(3)
+  final String from;
+  @HiveField(4)
+  final String to;
+  @HiveField(5)
+  final double value;
+  @HiveField(6)
+  final String sentTokenSymbol;
+
+  TransactionData(this.hash, this.transactionType, this.epoch, this.from,
+      this.to, this.value, this.sentTokenSymbol);
+}

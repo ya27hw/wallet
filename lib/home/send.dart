@@ -181,41 +181,66 @@ class _SendState extends State<Send> {
 
       case 2:
         symbol = operationMode == "ETH" ? "ETH" : symbol;
-        return Padding(
-          padding: EdgeInsets.only(top: getHeight(context) * 0.09),
-          child: Column(children: <Widget>[
-            const SizedBox(
-              width: double.infinity,
-              child: Text("Transaction details:",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      textBaseline: TextBaseline.alphabetic,
-                      color: Colors.white)),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: Text("To: ${_receiveAddressController.text}",
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 15,
-                      textBaseline: TextBaseline.alphabetic,
-                      color: Colors.white)),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: Text("Amount: ${_valueController.text} $symbol",
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 15,
-                      textBaseline: TextBaseline.alphabetic,
-                      color: Colors.white)),
-            ),
-          ]),
+        return FutureBuilder(
+          future: Web3().getGasFees(),
+          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+            if (snapshot.hasData) {
+              return Padding(
+                padding: EdgeInsets.only(top: getHeight(context) * 0.09),
+                child: Column(children: <Widget>[
+                  const SizedBox(
+                    width: double.infinity,
+                    child: Text("Transaction details:",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            textBaseline: TextBaseline.alphabetic,
+                            color: Colors.white)),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                        "To: ${displayAddress(_receiveAddressController.text)}",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            textBaseline: TextBaseline.alphabetic,
+                            color: Colors.white)),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Text("Amount: ${_valueController.text} $symbol",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            textBaseline: TextBaseline.alphabetic,
+                            color: Colors.white)),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                        "Gas Fees: ${formatDouble(snapshot.data!, 3)} GWEI",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            textBaseline: TextBaseline.alphabetic,
+                            color: Colors.white)),
+                  ),
+                ]),
+              );
+            } else {
+              return Padding(
+                padding: EdgeInsets.only(top: getHeight(context) * 0.09),
+                child: Column(children: const [CircularProgressIndicator()]),
+              );
+            }
+          },
         );
+
       default:
         return const Text("Error");
     }

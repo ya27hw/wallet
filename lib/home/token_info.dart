@@ -40,7 +40,9 @@ class _TokenInfoPageState extends State<TokenInfoPage> {
                     Map<dynamic, dynamic> data = snapshot.data!;
                     return Helper().tokenDescriptionCard(
                       getWidth(context),
-                      widget.tokenInfo.priceUSD,
+                      data["price"] is bool
+                          ? widget.tokenInfo.priceUSD
+                          : data["price"]["rate"],
                       data["price"] is bool ? 0 : data["price"]["diff"],
                       widget.tokenInfo.balance,
                       data["name"],

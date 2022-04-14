@@ -62,13 +62,11 @@ class _AddTokenState extends State<AddToken> {
                     // Validate address
                     bool isValidAddress = be.Web3().validateAddress(value);
                     if (isValidAddress) {
-                      var decimalSymbol =
-                          await be.Web3().getSymbolDecimal(value);
+                      var info = await be.Web3().getSymbolDecimal(value);
                       setState(() {
                         // Set Symbol field and Decimal field to the retrieved values
-                        _decimalsController.text =
-                            decimalSymbol["decimals"].toString();
-                        _symbolController.text = decimalSymbol["symbol"];
+                        _decimalsController.text = info["decimals"].toString();
+                        _symbolController.text = info["symbol"];
                       });
                     }
                   },
@@ -164,8 +162,7 @@ class _AddTokenState extends State<AddToken> {
                     print("Added Token: " + tempToken.address);
                     print("Added Token: " + tempToken.decimals.toString());
                     final tokenList = tokenBox.get(defaultNetwork) ?? [];
-                    List<Token> tokens =
-                        List.castFrom(tokenList);
+                    List<Token> tokens = List.castFrom(tokenList);
 
                     // Remove token if it already exists
                     tokens.removeWhere(

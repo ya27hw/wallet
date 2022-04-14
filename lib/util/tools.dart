@@ -6,6 +6,10 @@ bool hasNumber(String value) {
   return value.contains(RegExp(r'[0-9]'));
 }
 
+double formatDouble(double value, int decimalPlaces) {
+  return double.parse(value.toStringAsFixed(decimalPlaces));
+}
+
 bool hasUpperCase(String value) {
   return value.contains(RegExp(r'[A-Z]'));
 }
@@ -26,7 +30,7 @@ Future<String> get localPath async {
 Future<void> deleteFile(String fileName) async {
   final path = await localPath;
   final file = File('$path/$fileName');
-  
+
   if (await file.exists()) {
     await file.delete();
   }
@@ -37,7 +41,7 @@ Future<bool> checkIfFileExists(String fileName) async {
   final file = File('$path/$fileName');
 
   return file.exists();
-} 
+}
 
 Future<File> localFile(String fileName) async {
   final path = await localPath;
