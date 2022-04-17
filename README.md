@@ -4,7 +4,11 @@ Ethereum-Based Wallet for Y4 Project
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+`flutter pub get`
+
+Connect an Android Device, or set up an emulator via Android Studio
+
+`flutter run`
 
 A few resources to get you started if this is your first Flutter project:
 
