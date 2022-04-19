@@ -132,6 +132,17 @@ class Web3 {
     return accs;
   }
 
+  String get privateKey {
+    var myKey = myWallet.privateKey as EthPrivateKey;
+    String privKeyString = bytesToHex(myKey.privateKey);
+    // If contains 0x, remove it
+    if (privKeyString.startsWith("00")) {
+      return privKeyString.substring(2);
+    } else {
+      return privKeyString;
+    }
+  }
+
   Future<double> _getMainTokenBalance() async {
     var apiUrl = _myBox.get(_myBox.get("defaultNetwork")).rpcURL;
     var httpClient = Client();

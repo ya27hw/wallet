@@ -1,12 +1,13 @@
 import 'dart:io';
-
+import 'package:restart_app/restart_app.dart';
+import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
 bool hasNumber(String value) {
   return value.contains(RegExp(r'[0-9]'));
 }
 
-double formatDouble(double value, int decimalPlaces) {
+double formatDouble(num value, int decimalPlaces) {
   return double.parse(value.toStringAsFixed(decimalPlaces));
 }
 
@@ -66,5 +67,15 @@ Future<String> readWallet() async {
   } catch (e) {
     // If encountering an error, return 0
     return "";
+  }
+}
+
+void loadNetwork(String network) {
+  Box myBox = Hive.box("myBox");
+  myBox.put("defaultNetwork", network);
+  print(myBox.get("defaultNetwork"));
+  // Check if app is not on iOS
+  if (!Platform.isIOS) {
+    Restart.restartApp();
   }
 }

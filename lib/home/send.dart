@@ -320,6 +320,8 @@ class _SendState extends State<Send> {
     return Scaffold(
       backgroundColor: primaryDarkColor(),
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
+
         centerTitle: true,
         automaticallyImplyLeading: true,
         backgroundColor: secondaryDarkColor(),

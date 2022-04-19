@@ -35,7 +35,7 @@ Future<void> main() async {
   }
 
   // TESTING PURPOSES : Set defaultNetwork
-  myBox.put("defaultNetwork", "mainnet");
+  //myBox.put("defaultNetwork", "mainnet");
 
   // ---------- Initial route ----------
   bool exists = await checkIfFileExists("wallet.json");

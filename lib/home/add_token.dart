@@ -31,6 +31,8 @@ class _AddTokenState extends State<AddToken> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
+
           centerTitle: true,
           automaticallyImplyLeading: true,
           backgroundColor: secondaryDarkColor(),
@@ -126,6 +128,7 @@ class _AddTokenState extends State<AddToken> {
                   onChanged: (String value) {
                     setState(() {});
                   },
+                  keyboardType: TextInputType.number,
                   controller: _decimalsController,
                   maxLines: 1,
                   decoration: const InputDecoration(

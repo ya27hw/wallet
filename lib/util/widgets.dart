@@ -88,8 +88,8 @@ class Helper {
     );
   }
 
-  Widget tokenDescriptionCard(double w, double balance, double change,
-      double tokenBalance, String tokenName, String symbol, String imageUrl,
+  Widget tokenDescriptionCard(num w, num balance, num change,
+      num tokenBalance, String tokenName, String symbol, String imageUrl,
       [String? description, String? website, String? reddit, String? twitter]) {
     BalanceIndicator mbi = BalanceIndicator();
 

@@ -296,6 +296,8 @@ class _SwapState extends State<Swap> {
     return Scaffold(
       backgroundColor: primaryDarkColor(),
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
+
         backgroundColor: secondaryDarkColor(),
         centerTitle: true,
         title: const Text(

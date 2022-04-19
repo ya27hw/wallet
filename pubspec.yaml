@@ -58,6 +58,7 @@ dependencies:
   liquid_pull_to_refresh: ^3.0.1
   syncfusion_flutter_charts: ^20.1.47+1
   flutter_svg: ^1.0.3
+  restart_app: ^1.1.0
 
 dev_dependencies:
   flutter_test:
