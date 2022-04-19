@@ -17,9 +17,10 @@ bool hasUpperCase(String value) {
 
 String displayAddress(String address) {
   // Take first 8 characters and last 8 characters
-  return address.substring(0, 6) +
-      "..." +
-      address.substring(address.length - 4, address.length);
+
+  return address.length > 12
+      ? '${address.substring(0, 8)}...${address.substring(address.length - 8)}'
+      : address;
 }
 
 Future<String> get localPath async {

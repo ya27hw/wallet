@@ -272,18 +272,62 @@ class _SendState extends State<Send> {
           });
         } else if (activeStep == upperBound - 1) {
           // send transaction
-          if (operationMode == "ETH") {
-            await Web3().sendTokenTransaction(
-              _receiveAddressController.text,
-              double.parse(_valueController.text),
-            );
-          } else {
-            await Web3().sendTokenTransaction(_receiveAddressController.text,
-                double.parse(_valueController.text), dropDownValue, decimals);
+
+          try {
+            if (operationMode == "ETH") {
+              await Web3().sendTokenTransaction(
+                _receiveAddressController.text,
+                double.parse(_valueController.text),
+              );
+            } else {
+              await Web3().sendTokenTransaction(_receiveAddressController.text,
+                  double.parse(_valueController.text), dropDownValue, decimals);
+            }
+          } catch (e) {
+            // Get error msg
+            String errorMsg = e.toString();
+            Navigator.pop(context);
+
+            if (errorMsg.contains("insufficient funds")) {
+              return showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Insufficient funds"),
+                      content: const Text(
+                          "You don't have enough funds to send this transaction"),
+                      actions: <Widget>[
+                        ElevatedButton(
+                          child: const Text('Ok'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            } else {
+              return showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Error"),
+                      content:
+                          const Text("Something went wrong, please try again"),
+                      actions: <Widget>[
+                        ElevatedButton(
+                          child: const Text('Ok'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            }
           }
 
           // pop screen
-          Navigator.pop(context);
         }
       },
     );
@@ -321,7 +365,6 @@ class _SendState extends State<Send> {
       backgroundColor: primaryDarkColor(),
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
-
         centerTitle: true,
         automaticallyImplyLeading: true,
         backgroundColor: secondaryDarkColor(),
