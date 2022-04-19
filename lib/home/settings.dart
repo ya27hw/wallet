@@ -79,7 +79,9 @@ class _SettingsState extends State<Settings> {
                               value: 'bsc20',
                               groupValue: 'network',
                               onChanged: (value) {
-                                setState(() {});
+                                setState(() {
+                                  loadNetwork(value.toString());
+                                });
                               },
                             ),
                             RadioListTile(
@@ -97,7 +99,9 @@ class _SettingsState extends State<Settings> {
                               value: 'fantom',
                               groupValue: 'network',
                               onChanged: (value) {
-                                setState(() {});
+                                setState(() {
+                                  loadNetwork(value.toString());
+                                });
                               },
                             ),
                             RadioListTile(
@@ -105,7 +109,9 @@ class _SettingsState extends State<Settings> {
                               value: 'matic',
                               groupValue: 'network',
                               onChanged: (value) {
-                                setState(() {});
+                                setState(() {
+                                  loadNetwork(value.toString());
+                                });
                               },
                             ),
                           ],

@@ -24,7 +24,7 @@ Future<void> main() async {
 
   // TESTING PURPOSES
   // await myBox.clear();
-  //  tokenBox.clear();
+   tokenBox.clear();
 
   // ---------- Load Networks to DB ----------
 
@@ -35,7 +35,7 @@ Future<void> main() async {
   }
 
   // TESTING PURPOSES : Set defaultNetwork
-  //myBox.put("defaultNetwork", "mainnet");
+  myBox.put("defaultNetwork", "ropsten");
 
   // ---------- Initial route ----------
   bool exists = await checkIfFileExists("wallet.json");
