@@ -86,9 +86,9 @@ class Web3 {
     _initWallet(creds, password, rng);
   }
 
-  Future<void> loadWallet(String privateKey) async {
+  Future<void> loadWallet(String privateKey, String password) async {
     EthPrivateKey creds = EthPrivateKey.fromHex(privateKey);
-    _initWallet(creds, "password");
+    _initWallet(creds, password);
   }
 
   void _initWallet(EthPrivateKey creds, String password, [Random? rng]) async {

@@ -97,16 +97,17 @@ class _ImportWalletTwoState extends State<ImportWalletTwo> {
 
                   String chosenPrivKey = addyMap[chosenAddress];
 
-                  await be.Web3().loadWallet(chosenPrivKey);
+                  // await be.Web3().loadWallet(chosenPrivKey);
 
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, "portfolio", (Route<dynamic> route) => false);
+                  Navigator.pushNamed(
+                      context, "createWallet",
+                      arguments: {
+                        "privKey": chosenPrivKey,
+                      });
                 },
               ),
             ],
           ),
-        )
-
-        );
+        ));
   }
 }

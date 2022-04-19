@@ -32,7 +32,9 @@ Route<dynamic> controller(RouteSettings settings) {
 
     case createWallet:
       return MaterialPageRoute(
-          builder: (context) => const login.CreateWallet());
+          builder: (context) => login.CreateWallet(
+                privKey: settings.arguments,
+              ));
 
     case portfolio:
       return MaterialPageRoute(builder: (context) => const home.Portfolio());

@@ -3,7 +3,8 @@ import "package:eth_wallet/util/library.dart" as utils;
 import 'package:eth_wallet/backend/library.dart' as be;
 
 class CreateWallet extends StatefulWidget {
-  const CreateWallet({Key? key}) : super(key: key);
+  final dynamic? privKey;
+  const CreateWallet({Key? key, this.privKey}) : super(key: key);
 
   @override
   _CreateWalletState createState() => _CreateWalletState();
@@ -20,10 +21,15 @@ class _CreateWalletState extends State<CreateWallet> {
     _passwordController.dispose();
   }
 
+  // @override
+  // void initState() {
+  //   print(widget.privKey);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: false,
         body: Container(
             width: double.infinity,
             height: double.infinity,
@@ -107,8 +113,17 @@ class _CreateWalletState extends State<CreateWallet> {
                             _isLoading = true;
                           });
 
-                          await be.Web3()
-                              .createWallet(_passwordController.text);
+                          if (widget.privKey != null) {
+                            // If the user is coming from the restore wallet screen, use the private key they entered
+                            await be.Web3().loadWallet(
+                              widget.privKey["privKey"],
+                              _passwordController.text,
+                            );
+                          } else {
+                            // If the user is creating a new wallet, generate a new private key
+                            await be.Web3()
+                                .createWallet(_passwordController.text);
+                          }
 
                           await Navigator.pushNamedAndRemoveUntil(context,
                               "portfolio", (Route<dynamic> route) => false);
