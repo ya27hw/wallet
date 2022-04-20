@@ -1,5 +1,6 @@
 import 'package:eth_wallet/backend/library.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive/hive.dart';
 
 void main() {
   final web = Web3();
@@ -17,5 +18,6 @@ void main() {
     await web.loadWallet(privKey, "password");
     expect(web.privateKey, privKey);
   });
-  
+  test("Load a wallet with a private key", () async {
+  });
 }

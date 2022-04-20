@@ -223,7 +223,7 @@ class _SendState extends State<Send> {
                   SizedBox(
                     width: double.infinity,
                     child: Text(
-                        "Gas Fees: ${formatDouble(snapshot.data!, 3)} GWEI",
+                        "Max Gas Fees: ${formatDouble(snapshot.data!, 3)} GWEI",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                             fontSize: 15,
@@ -326,6 +326,16 @@ class _SendState extends State<Send> {
                   });
             }
           }
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                "Transaction sent!",
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          );
 
           // pop screen
         }

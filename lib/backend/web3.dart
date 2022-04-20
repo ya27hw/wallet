@@ -366,7 +366,6 @@ class Web3 {
     utils.Network network = _myBox.get(defaultNetwork) as utils.Network;
 
     Web3Client client = _getClient();
-    final gasPrice = await client.getGasPrice();
 
     final toContract = utils.TokenG(
         address: EthereumAddress.fromHex(to.address),
@@ -403,7 +402,7 @@ class Web3 {
           _myWallet.privateKey.address,
           BigInt.from(DateTime.now().millisecondsSinceEpoch + 10 * 60 * 1000),
           credentials: _myWallet.privateKey,
-          transaction: Transaction(gasPrice: gasPrice));
+          transaction: Transaction());
 
       addToActivity(utils.TransactionData(
           swapTx,
@@ -412,7 +411,7 @@ class Web3 {
           _myWallet.privateKey.address.hex,
           to.address,
           amount,
-          to.symbol));
+          from.symbol));
     } else {
       Token from = utils.Token("ETH", network.nativeTokenAddress, 6);
       final tokenInAmount = BigInt.from(amount * pow(10, from.decimals));
@@ -443,7 +442,6 @@ class Web3 {
     utils.Network defaultNetwork =
         _myBox.get(_myBox.get("defaultNetwork")) as utils.Network;
     Web3Client ethClient = _getClient();
-    final gasPrice = await ethClient.getGasPrice();
 
     if (tokenContractAddress == null || decimals == null) {
       // Send transaction with native token
@@ -451,11 +449,8 @@ class Web3 {
       BigInt valueWei = BigInt.from(value * pow(10, 18));
       var transaction = Transaction(
         to: EthereumAddress.fromHex(receivingAddress),
-        maxGas: 100000,
-        gasPrice: gasPrice,
         value: EtherAmount.inWei(valueWei),
       );
-
       final hash = await ethClient.sendTransaction(
           _myWallet.privateKey, transaction,
           chainId: defaultNetwork.chainID);
@@ -473,13 +468,10 @@ class Web3 {
           client: ethClient);
 
       final hash = await tokenContract.transfer(
-          EthereumAddress.fromHex(receivingAddress),
-          BigInt.from(value * pow(10, decimals)),
-          credentials: _myWallet.privateKey,
-          transaction: Transaction(
-            gasPrice: gasPrice,
-            maxGas: 100000,
-          ));
+        EthereumAddress.fromHex(receivingAddress),
+        BigInt.from(value * pow(10, decimals)),
+        credentials: _myWallet.privateKey,
+      );
 
       String symbol = await tokenContract.symbol();
 
@@ -492,8 +484,6 @@ class Web3 {
           value,
           symbol));
     }
-
-    // TODO: Record transaction in activity later
   }
 
   void addToActivity(utils.TransactionData transaction) {

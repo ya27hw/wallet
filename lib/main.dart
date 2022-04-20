@@ -24,7 +24,8 @@ Future<void> main() async {
 
   // TESTING PURPOSES
   // await myBox.clear();
-   tokenBox.clear();
+  // tokenBox.clear();
+  activityBox.clear();
 
   // ---------- Load Networks to DB ----------
 

@@ -50,7 +50,7 @@ class Helper {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                "${t.transactionType == TransactionType.send ? "To" : "From"} ${displayAddress(t.to)}"),
+                "To ${displayAddress(t.to)}"),
             Text(
               DateFormat.yMMMMd()
                   .add_jm()
