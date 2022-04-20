@@ -297,7 +297,6 @@ class _SwapState extends State<Swap> {
       backgroundColor: primaryDarkColor(),
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
-
         backgroundColor: secondaryDarkColor(),
         centerTitle: true,
         title: const Text(
@@ -305,41 +304,43 @@ class _SwapState extends State<Swap> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Stack(
-        children: <Widget>[
+      body: castedTokenList.isEmpty
+          ? Center(child: Text("Add tokens to get started!"))
+          :  Stack(
+        children:  <Widget>[
           Padding(
             padding: const EdgeInsets.only(top: 20),
-            child: Align(
+            child:  Align(
               alignment: Alignment.topCenter,
               child: DotStepper(
-                tappingEnabled: false,
-                activeStep: activeStep,
-                dotCount: upperBound,
-                dotRadius: 10,
-                shape: Shape.circle,
-                spacing: 20,
-                indicator: Indicator.shift,
-                fixedDotDecoration: const FixedDotDecoration(
-                  color: Colors.grey,
-                ),
-                indicatorDecoration: const IndicatorDecoration(
-                  // style: PaintingStyle.stroke,
-                  // strokeWidth: 8,
-                  color: Colors.greenAccent,
-                ),
-                lineConnectorDecoration: const LineConnectorDecoration(
-                  color: Colors.red,
-                  strokeWidth: 0,
-                ),
-                onDotTapped: (tappedDotIndex) {
-                  setState(() {
-                    activeStep = tappedDotIndex;
-                  });
-                },
-              ),
+                      tappingEnabled: false,
+                      activeStep: activeStep,
+                      dotCount: upperBound,
+                      dotRadius: 10,
+                      shape: Shape.circle,
+                      spacing: 20,
+                      indicator: Indicator.shift,
+                      fixedDotDecoration: const FixedDotDecoration(
+                        color: Colors.grey,
+                      ),
+                      indicatorDecoration: const IndicatorDecoration(
+                        // style: PaintingStyle.stroke,
+                        // strokeWidth: 8,
+                        color: Colors.greenAccent,
+                      ),
+                      lineConnectorDecoration: const LineConnectorDecoration(
+                        color: Colors.red,
+                        strokeWidth: 0,
+                      ),
+                      onDotTapped: (tappedDotIndex) {
+                        setState(() {
+                          activeStep = tappedDotIndex;
+                        });
+                      },
+                    ),
             ),
           ),
-          getBody(),
+          // getBody(),
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: Align(
