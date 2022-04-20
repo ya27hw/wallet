@@ -3,7 +3,7 @@ import "package:eth_wallet/util/library.dart" as utils;
 import 'package:eth_wallet/backend/library.dart' as be;
 
 class CreateWallet extends StatefulWidget {
-  final dynamic? privKey;
+  final dynamic privKey;
   const CreateWallet({Key? key, this.privKey}) : super(key: key);
 
   @override

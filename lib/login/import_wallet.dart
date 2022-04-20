@@ -18,7 +18,6 @@ class _ImportWalletState extends State<ImportWallet> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _seedLength = 0;
     _continueDisabled = false;
@@ -28,7 +27,6 @@ class _ImportWalletState extends State<ImportWallet> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _seedPhraseController.dispose();
   }

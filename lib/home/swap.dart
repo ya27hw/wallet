@@ -77,20 +77,7 @@ class _SwapState extends State<Swap> {
             });
           } else if (activeStep == upperBound - 1) {
             // send transaction
-            if (dropDownValue == dropDownValue2) {
-              // SnackBar to show error
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    "You can't swap between the same token",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  backgroundColor: Colors.red,
-                ),
-              );
-              return;
-            }
-            print("transaction is sending....");
+
             if (operationMode == "ETH") {
               // Send from ETH to Token
               await Web3().swapTokens(
@@ -98,6 +85,19 @@ class _SwapState extends State<Swap> {
                 double.parse(_valueController.text),
               );
             } else {
+              if (dropDownValue == dropDownValue2) {
+                // SnackBar to show error
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "You can't swap between the same token",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
               // Send from Token to Token
               await Web3().swapTokens(
                 Token(symbol2, dropDownValue2, decimals2),
@@ -265,26 +265,36 @@ class _SwapState extends State<Swap> {
                         color: Colors.white)),
               ),
               const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: Text(
-                    "Converting ${_valueController.text} $symbol to $symbol2",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 15,
-                        textBaseline: TextBaseline.alphabetic,
-                        color: Colors.white)),
-              ),
+              FutureBuilder<double>(
+                  future: Web3().getEstimatedBalanceOut(
+                    double.parse(_valueController.text),
+                    0.1,
+                    Token(symbol, dropDownValue, decimals),
+                    Token(symbol2, dropDownValue2, decimals2),
+                  ),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<double> snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(
+                          "Converting ${_valueController.text} $symbol to ${formatDouble(snapshot.data!, 5)} $symbol2",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              textBaseline: TextBaseline.alphabetic,
+                              color: Colors.white));
+                    } else if (snapshot.hasError) {
+                      return Text(
+                          "Converting ${_valueController.text} $symbol to $symbol2",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              textBaseline: TextBaseline.alphabetic,
+                              color: Colors.white));
+                    } else {
+                      return const CircularProgressIndicator();
+                    }
+                  }),
               const SizedBox(height: 10),
-              // SizedBox(
-              //   width: double.infinity,
-              //   child: Text("Amount: ${_valueController.text} $symbol",
-              //       textAlign: TextAlign.center,
-              //       style: const TextStyle(
-              //           fontSize: 15,
-              //           textBaseline: TextBaseline.alphabetic,
-              //           color: Colors.white)),
-              // ),
             ]),
           );
 
@@ -305,14 +315,14 @@ class _SwapState extends State<Swap> {
         ),
       ),
       body: castedTokenList.isEmpty
-          ? Center(child: Text("Add tokens to get started!"))
-          :  Stack(
-        children:  <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child:  Align(
-              alignment: Alignment.topCenter,
-              child: DotStepper(
+          ? const Center(child: Text("Add tokens to get started!"))
+          : Stack(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: DotStepper(
                       tappingEnabled: false,
                       activeStep: activeStep,
                       dotCount: upperBound,
@@ -338,21 +348,21 @@ class _SwapState extends State<Swap> {
                         });
                       },
                     ),
+                  ),
+                ),
+                getBody(),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [previousButton(), nextButton()],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          // getBody(),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [previousButton(), nextButton()],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

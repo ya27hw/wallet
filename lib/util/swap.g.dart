@@ -17,6 +17,7 @@ class Swap extends _i1.GeneratedContract {
   /// The optional [atBlock] parameter can be used to view historical data. When
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
+  // ignore: non_constant_identifier_names
   Future<_i1.EthereumAddress> WETH({_i1.BlockNum? atBlock}) async {
     final function = self.abi.functions[0];
     assert(checkSignature(function, 'ad5c4648'));

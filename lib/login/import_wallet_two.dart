@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:eth_wallet/util/library.dart';
-import 'package:eth_wallet/backend/library.dart' as be;
 
 class ImportWalletTwo extends StatefulWidget {
   const ImportWalletTwo({Key? key, required this.accountList})
@@ -16,7 +15,7 @@ class _ImportWalletTwoState extends State<ImportWalletTwo> {
   var _isLoading = false;
   String dropdownValue = "";
   bool _runOnce = false;
-  Map addyMap = Map();
+  Map addyMap = {};
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +29,7 @@ class _ImportWalletTwoState extends State<ImportWalletTwo> {
     }
     return Scaffold(
         backgroundColor: primaryDarkColor(),
-        body: Container(
+        body: SizedBox(
           width: double.infinity,
           height: double.infinity,
           child: Column(

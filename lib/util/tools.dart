@@ -18,8 +18,8 @@ bool hasUpperCase(String value) {
 String displayAddress(String address) {
   // Take first 8 characters and last 8 characters
 
-  return address.length > 12
-      ? '${address.substring(0, 8)}...${address.substring(address.length - 8)}'
+  return address.length > 10
+      ? '${address.substring(0, 6)}...${address.substring(address.length - 4)}'
       : address;
 }
 
@@ -74,7 +74,6 @@ Future<String> readWallet() async {
 void loadNetwork(String network) {
   Box myBox = Hive.box("myBox");
   myBox.put("defaultNetwork", network);
-  print(myBox.get("defaultNetwork"));
   // Check if app is not on iOS
   if (!Platform.isIOS) {
     Restart.restartApp();

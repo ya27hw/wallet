@@ -6,13 +6,13 @@ import 'package:web3dart/web3dart.dart';
 import 'dart:math';
 import 'package:hdkey/hdkey.dart';
 import 'package:bip39/bip39.dart' as bip39;
-
 import '../util/library.dart';
 
-var myWallet;
+var _myWallet;
 Box _myBox = Hive.box("myBox");
 
 class Web3 {
+  Web3([Box? box]);
   EtherUnit stringToUnit(String unit) {
     switch (unit) {
       case "wei":
@@ -58,7 +58,7 @@ class Web3 {
   String get defaultNetwork => _myBox.get("defaultNetwork");
 
   String returnAddress() {
-    return myWallet.privateKey.address.hex;
+    return _myWallet.privateKey.address.hex;
   }
 
   bool validateAddress(String address) {
@@ -73,9 +73,10 @@ class Web3 {
   Future<bool> loadWalletJson(String password) async {
     String content = await utils.readWallet();
     try {
-      myWallet = Wallet.fromJson(content, password);
+      _myWallet = Wallet.fromJson(content, password);
       return true;
     } catch (e) {
+      print(e);
       return false;
     }
   }
@@ -93,8 +94,8 @@ class Web3 {
 
   void _initWallet(EthPrivateKey creds, String password, [Random? rng]) async {
     rng ??= Random.secure();
-    myWallet = Wallet.createNew(creds, password, rng);
-    String wJson = myWallet.toJson();
+    _myWallet = Wallet.createNew(creds, password, rng);
+    String wJson = _myWallet.toJson();
     utils.writeWallet(wJson);
   }
 
@@ -133,7 +134,7 @@ class Web3 {
   }
 
   String get privateKey {
-    var myKey = myWallet.privateKey as EthPrivateKey;
+    var myKey = _myWallet.privateKey as EthPrivateKey;
     String privKeyString = bytesToHex(myKey.privateKey);
     // If contains 0x, remove it
     if (privKeyString.startsWith("00")) {
@@ -148,7 +149,7 @@ class Web3 {
     var httpClient = Client();
     var ethClient = Web3Client(apiUrl, httpClient);
     EtherAmount balance =
-        await ethClient.getBalance(myWallet.privateKey.address);
+        await ethClient.getBalance(_myWallet.privateKey.address);
     final mainBalance = balance.getValueInUnit(EtherUnit.ether);
     // Format to 4 d.p.
     return formatDouble(mainBalance, 4);
@@ -219,7 +220,7 @@ class Web3 {
       [DeployedContract? tokenContract, DeployedContract? swapContract]) async {
     final client = _getClient();
     Network network = _myBox.get(_myBox.get("defaultNetwork"));
-    if (tokenAddress == network.stableCoinAddress) {
+    if (tokenAddress.toLowerCase() == network.stableCoinAddress.toLowerCase()) {
       return 1.0;
     }
 
@@ -263,7 +264,7 @@ class Web3 {
       final balance = await client.call(
           contract: tokenContract,
           function: balanceOfFunction,
-          params: [myWallet.privateKey.address]);
+          params: [_myWallet.privateKey.address]);
       final amount = EtherAmount.inWei(balance.first);
       double tokenBalance = amount.getInWei.toDouble() / pow(10, decimals);
 
@@ -338,15 +339,31 @@ class Web3 {
     };
   }
 
-  Future<void> swapTokens(Token to, double amount, [Token? from]) async {
-    // If no from token is specified, we can assume the user shall be using SwapEthForExactTokens
+  Future<double> getEstimatedBalanceOut(
+      double amount, double slippage, Token from, Token to) async {
+    utils.Network network = _myBox.get(defaultNetwork) as utils.Network;
+    Web3Client client = _getClient();
 
+    final tokenInAmount = BigInt.from(amount * pow(10, from.decimals));
+    final swapContract = utils.Swap(
+        address: EthereumAddress.fromHex(network.swapRouterAddress),
+        client: client,
+        chainId: network.chainID);
+    final tokenOutAmount = await swapContract.getAmountsOut(tokenInAmount, [
+      EthereumAddress.fromHex(from.address),
+      EthereumAddress.fromHex(to.address)
+    ]);
+    final tokenOutMinAmount =
+        tokenOutAmount[1] - (tokenOutAmount[1] * BigInt.from(0.1));
+
+    return tokenOutMinAmount.toDouble() / pow(10, to.decimals);
+  }
+
+  Future<void> swapTokens(Token to, double amount, [Token? from]) async {
     // NOTES
     // BSC20-Test WBNB --> Anything WORKS
     // Ropsten USDC --> WETH WORKS
     utils.Network network = _myBox.get(defaultNetwork) as utils.Network;
-    // print(from?.address);
-    // print(to.address);
 
     Web3Client client = _getClient();
     final gasPrice = await client.getGasPrice();
@@ -371,12 +388,11 @@ class Web3 {
 
       final approveTokenIn = await toContract.approve(
           EthereumAddress.fromHex(network.swapRouterAddress), tokenInAmount,
-          credentials: myWallet.privateKey);
+          credentials: _myWallet.privateKey);
       print("Approve Token: $approveTokenIn");
-
-      // TODO add tx hash to DB
       print("transferring $tokenInAmount (${from.symbol}) -- ${from.address}");
       print("receiving $tokenOutMinAmount (${to.symbol}) -- ${to.address}");
+
       final swapTx = await swapContract.swapTokensForExactTokens(
           tokenInAmount,
           tokenOutMinAmount,
@@ -384,58 +400,42 @@ class Web3 {
             EthereumAddress.fromHex(from.address),
             EthereumAddress.fromHex(to.address)
           ],
-          myWallet.privateKey.address,
+          _myWallet.privateKey.address,
           BigInt.from(DateTime.now().millisecondsSinceEpoch + 10 * 60 * 1000),
-          credentials: myWallet.privateKey,
+          credentials: _myWallet.privateKey,
           transaction: Transaction(gasPrice: gasPrice));
-    } else {}
 
-    // final WBNB = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
-    // final WBNBContract = utils.TokenG(
-    //     address: EthereumAddress.fromHex(WBNB),
-    //     client: _getClient(),
-    //     chainId: 97);
+      addToActivity(utils.TransactionData(
+          swapTx,
+          utils.TransactionType.swap,
+          DateTime.now().millisecondsSinceEpoch,
+          _myWallet.privateKey.address.hex,
+          to.address,
+          amount,
+          to.symbol));
+    } else {
+      Token from = utils.Token("ETH", network.nativeTokenAddress, 6);
+      final tokenInAmount = BigInt.from(amount * pow(10, from.decimals));
+      final tokenInMinAmount =
+          tokenInAmount - (tokenInAmount * BigInt.from(0.1));
 
-    // final BUSD = "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7";
-    // final BUSDContract = utils.TokenG(
-    //     address: EthereumAddress.fromHex(BUSD),
-    //     client: _getClient(),
-    //     chainId: 97);
-
-    // final router = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
-
-    // final swapContract = _getSwapContract();
-    // final routerContract = utils.Swap(
-    //     address: EthereumAddress.fromHex(router),
-    //     client: _getClient(),
-    //     chainId: 97);
-
-    // final BUSDIn = EtherAmount.fromUnitAndValue(EtherUnit.ether, 5);
-
-    // final getAmountsOutFunction = swapContract.function('getAmountsOut');
-
-    // final amounts = await _getClient()
-    //     .call(contract: swapContract, function: getAmountsOutFunction, params: [
-    //   BUSDIn.getInWei,
-    //   [EthereumAddress.fromHex(BUSD), EthereumAddress.fromHex(WBNB)]
-    // ]);
-    // final WBNBOutMin = amounts.first[1] as BigInt;
-    // print(WBNBOutMin);
-    // // Subtract 1 ether to cover the gas cost
-    // final WBNBOut = WBNBOutMin - BigInt.from(1000000000000000);
-    // print(WBNBOut);
-    // final approveTokenIn = await BUSDContract.approve(
-    //     EthereumAddress.fromHex(router), BUSDIn.getInWei,
-    //     credentials: myWallet.privateKey);
-    // print(approveTokenIn);
-
-    // final swapTx = await routerContract.swapExactTokensForTokens(
-    //     BUSDIn.getInWei,
-    //     WBNBOut,
-    //     [EthereumAddress.fromHex(BUSD), EthereumAddress.fromHex(WBNB)],
-    //     EthereumAddress.fromHex("0x81839B36E8B7EDe6fcFaD0b07b12A19980035A30"),
-    //     BigInt.from(1649615820),
-    //     credentials: myWallet.privateKey);
+      final tokenOutAmount = await swapContract.getAmountsOut(tokenInAmount, [
+        EthereumAddress.fromHex(from.address),
+        EthereumAddress.fromHex(to.address)
+      ]);
+      final tokenOutMinAmount =
+          tokenOutAmount[1] - (tokenOutAmount[1] * BigInt.from(0.1));
+      // final swapTx = await swapContract.swapETHForExactTokens(
+      //     amount,
+      //     [
+      //       EthereumAddress.fromHex(from.address),
+      //       EthereumAddress.fromHex(to.address)
+      //     ],
+      //     _myWallet.privateKey.address,
+      //     BigInt.from(DateTime.now().millisecondsSinceEpoch + 10 * 60 * 1000),
+      //     credentials: _myWallet.privateKey,
+      //     transaction: Transaction(gasPrice: gasPrice));
+    }
   }
 
   Future<void> sendTokenTransaction(String receivingAddress, double value,
@@ -457,13 +457,13 @@ class Web3 {
       );
 
       final hash = await ethClient.sendTransaction(
-          myWallet.privateKey, transaction,
+          _myWallet.privateKey, transaction,
           chainId: defaultNetwork.chainID);
       addToActivity(utils.TransactionData(
           hash,
           utils.TransactionType.send,
           DateTime.now().millisecondsSinceEpoch,
-          myWallet.privateKey.address.hex,
+          _myWallet.privateKey.address.hex,
           receivingAddress,
           value,
           "ETH"));
@@ -475,7 +475,7 @@ class Web3 {
       final hash = await tokenContract.transfer(
           EthereumAddress.fromHex(receivingAddress),
           BigInt.from(value * pow(10, decimals)),
-          credentials: myWallet.privateKey,
+          credentials: _myWallet.privateKey,
           transaction: Transaction(
             gasPrice: gasPrice,
             maxGas: 100000,
@@ -487,7 +487,7 @@ class Web3 {
           hash,
           utils.TransactionType.send,
           DateTime.now().millisecondsSinceEpoch,
-          myWallet.privateKey.address.hex,
+          _myWallet.privateKey.address.hex,
           receivingAddress,
           value,
           symbol));
