@@ -5,13 +5,11 @@ import 'package:hive/hive.dart';
 
 Box box = Hive.box("myBox");
 
-
-
 Future<void> initDB() async {
   loadNetworks();
   loadTokenABI();
   loadSwapABI();
-  box.put("defaultNetwork", "bsc20-test");
+  box.put("defaultNetwork", "mainnet");
 }
 
 Future<void> loadTokenABI() async {

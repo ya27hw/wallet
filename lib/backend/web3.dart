@@ -401,8 +401,7 @@ class Web3 {
           ],
           _myWallet.privateKey.address,
           BigInt.from(DateTime.now().millisecondsSinceEpoch + 10 * 60 * 1000),
-          credentials: _myWallet.privateKey,
-          transaction: Transaction());
+          credentials: _myWallet.privateKey);
 
       addToActivity(utils.TransactionData(
           swapTx,
